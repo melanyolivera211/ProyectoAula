@@ -1,19 +1,16 @@
 package proyectoaula.ventanas;
-
 import java.sql.ResultSet;
 import javax.swing.JOptionPane;
-import proyectoaula.conexionBD.ConexionElectrodomestico;
+import javax.swing.JPasswordField;
 import proyectoaula.conexionBD.ConexionUsuario;
-import proyectoaula.objects.Electrodomestico;
 import proyectoaula.objects.Usuario;
 
 public class VentanaRegistroUsuario extends javax.swing.JDialog {
-
+    ConexionUsuario objConexion = new ConexionUsuario();
     public VentanaRegistroUsuario(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
     }
-
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -131,7 +128,12 @@ public class VentanaRegistroUsuario extends javax.swing.JDialog {
 
         txtClave.setFont(new java.awt.Font("Lucida Sans", 0, 14)); // NOI18N
         txtClave.setBorder(null);
-        jPanel2.add(txtClave, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 350, 252, 33));
+        txtClave.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtClaveActionPerformed(evt);
+            }
+        });
+        jPanel2.add(txtClave, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 350, 252, 30));
 
         botonGuardar.setFont(new java.awt.Font("Lucida Sans", 1, 14)); // NOI18N
         botonGuardar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/proyectoaula/imagenes/salvar.png"))); // NOI18N
@@ -186,7 +188,9 @@ public class VentanaRegistroUsuario extends javax.swing.JDialog {
         jPanel2.add(jSeparator4, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 230, 250, 10));
         jPanel2.add(jSeparator5, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 280, 250, 10));
         jPanel2.add(jSeparator6, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 330, 250, 10));
-        jPanel2.add(jSeparator7, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 380, 250, 30));
+
+        jSeparator7.setForeground(new java.awt.Color(204, 204, 204));
+        jPanel2.add(jSeparator7, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 380, 250, 20));
 
         jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 0, 530, 540));
 
@@ -229,16 +233,15 @@ public class VentanaRegistroUsuario extends javax.swing.JDialog {
             JOptionPane.showMessageDialog(rootPane, "Los campos de Nombre y Apellido solo deben contener letras.");
         } else {
             crearUsuario();
+            JOptionPane.showMessageDialog(rootPane, "¡El usuario ha sido registrado con éxito!");
             limpiarCampos();
         }
     }//GEN-LAST:event_botonGuardarActionPerformed
     private void crearUsuario() {
-        ConexionUsuario objConexion = new ConexionUsuario();
         Usuario usuario = recuperarDatosGUI();
         String strSentenciaInsert = String.format("INSERT INTO Usuarios (Cedula , Nombre , Apellido , Telefono , Correo , Clave )"
                 + "Values('%s', '%s' , '%s' , '%s', '%s' , '%s')", usuario.getCedula(), usuario.getNombre(), usuario.getApellido(),
                 usuario.getTelefono(), usuario.getEmail(), usuario.getContraseña());
-
         objConexion.ejecutarSentenciaSQL(strSentenciaInsert);
         try {
             ResultSet resultado = objConexion.consultarRegistros("SELECT * FROM Usuarios");
@@ -249,7 +252,6 @@ public class VentanaRegistroUsuario extends javax.swing.JDialog {
 
     public Usuario recuperarDatosGUI() {
         Usuario usuario = new Usuario();
-
         int cedula = Integer.parseInt(txtCedula.getText());
         usuario.setCedula(cedula);
         usuario.setNombre(txtNombre.getText());
@@ -257,9 +259,6 @@ public class VentanaRegistroUsuario extends javax.swing.JDialog {
         usuario.setTelefono(txtTelefono.getText());
         usuario.setEmail(txtEmail.getText());
         usuario.setContraseña(txtClave.getText());
-
-        JOptionPane.showMessageDialog(rootPane, "¡El usuario ha sido registrado con éxito!");
-        limpiarCampos();
         return usuario;
 
     }
@@ -278,10 +277,8 @@ public class VentanaRegistroUsuario extends javax.swing.JDialog {
             JOptionPane.showMessageDialog(rootPane, "Ingrese una cédula válida para consultar.");
         }
     }//GEN-LAST:event_botonBuscarActionPerformed
-    public Usuario consultarUsuario(int cedula) {
-        ConexionUsuario objConexion = new ConexionUsuario();
+    public Usuario consultarUsuario(int cedula) {      
         String strSentenciaSelect = String.format("SELECT * FROM Usuarios WHERE Cedula = '%d'", cedula);
-
         try {
             ResultSet resultado = objConexion.consultarRegistros(strSentenciaSelect);
             if (resultado.next()) {
@@ -304,60 +301,98 @@ public class VentanaRegistroUsuario extends javax.swing.JDialog {
     }
 
     private void botonEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonEditarActionPerformed
-        if (camposVacios()) {
-            JOptionPane.showMessageDialog(rootPane, "Todos los campos deben estar llenos.");
-        } else if (!validarCedula()) {
-            JOptionPane.showMessageDialog(rootPane, "La cédula debe tener entre 8 y 10 dígitos enteros.");
-        } else if (!validarEmail()) {
-            JOptionPane.showMessageDialog(rootPane, "El formato del email no es válido.");
-        } else if (!validarTelefono()) {
-            JOptionPane.showMessageDialog(rootPane, "El número de teléfono debe ser un número entero.");
-        } else if (!soloLetras(txtNombre.getText()) || !soloLetras(txtApellido.getText())) {
-            JOptionPane.showMessageDialog(rootPane, "Los campos de Nombre y Apellido solo deben contener letras.");
-        } else {
-            editarUsuario();
-            limpiarCampos();
+      if (camposVacios()) {
+        JOptionPane.showMessageDialog(rootPane, "Todos los campos deben estar llenos.");
+    } else if (!validarCedula()) {
+        JOptionPane.showMessageDialog(rootPane, "La cédula debe tener entre 8 y 10 dígitos enteros.");
+    } else if (!validarEmail()) {
+        JOptionPane.showMessageDialog(rootPane, "El formato del email no es válido.");
+    } else if (!validarTelefono()) {
+        JOptionPane.showMessageDialog(rootPane, "El número de teléfono debe ser un número entero.");
+    } else if (!soloLetras(txtNombre.getText()) || !soloLetras(txtApellido.getText())) {
+        JOptionPane.showMessageDialog(rootPane, "Los campos de Nombre y Apellido solo deben contener letras.");
+    } else {
+         int respuesta = JOptionPane.showConfirmDialog(rootPane, "¿Está seguro de que desea modificar el usuario?", "Confirmar modificación", JOptionPane.YES_NO_OPTION);
+    
+         if (respuesta == JOptionPane.YES_OPTION) {
+            JPasswordField pf = new JPasswordField();
+            int okCxl = JOptionPane.showConfirmDialog(rootPane, pf, "Ingrese la contraseña para confirmar", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+
+            if (okCxl == JOptionPane.OK_OPTION) {
+                String contraseña = new String(pf.getPassword());
+                if (!contraseña.isEmpty()) {
+                    editarUsuario(contraseña);
+                    limpiarCampos();
+                } else {
+                    JOptionPane.showMessageDialog(rootPane, "Debe ingresar una contraseña para confirmar.");
+                }
         }
+    }
+    }
 
     }//GEN-LAST:event_botonEditarActionPerformed
 
-    public void editarUsuario() {
-        ConexionUsuario objConexion = new ConexionUsuario();
-        Usuario usuario = recuperarDatosGUI();
-        String strSentenciaInsert = String.format("UPDATE Usuarios SET Nombre='%s', Apellido='%s' , Telefono='%s'"
-                + " , Correo ='%s', Clave='%s' WHERE Cedula=%s ", usuario.getNombre(), usuario.getApellido(), usuario.getTelefono(),
+    public void editarUsuario(String contraseña) {
+    Usuario usuario = recuperarDatosGUI();
+    // Suponiendo que la contraseña debe coincidir con la almacenada en el objeto Usuario
+    if (usuario.getContraseña().equals(contraseña)) {
+        String strSentenciaInsert = String.format("UPDATE Usuarios SET Nombre='%s', Apellido='%s', Telefono='%s', Correo='%s', Clave='%s' WHERE Cedula=%s",
+                usuario.getNombre(), usuario.getApellido(), usuario.getTelefono(),
                 usuario.getEmail(), usuario.getContraseña(), usuario.getCedula());
 
         objConexion.ejecutarSentenciaSQL(strSentenciaInsert);
+        JOptionPane.showMessageDialog(rootPane, "Usuario modificado correctamente.");
+    } else {
+        JOptionPane.showMessageDialog(rootPane, "Contraseña incorrecta. No se realizó la modificación.");
     }
-
+    }
+    
     private void botonEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonEliminarActionPerformed
-        if (!txtCedula.getText().isEmpty()) {
+    if (!txtCedula.getText().isEmpty()) {
+        int respuesta = JOptionPane.showConfirmDialog(rootPane, "¿Está seguro de que desea eliminar el usuario?", "Confirmar eliminación", JOptionPane.YES_NO_OPTION);
+        if (respuesta == JOptionPane.YES_OPTION) {
+            JPasswordField pf = new JPasswordField();
+            int okCxl = JOptionPane.showConfirmDialog(rootPane, pf, "Ingrese la contraseña para confirmar", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 
-            ConexionUsuario objConexion = new ConexionUsuario();
-            Usuario usuario = recuperarDatosGUI();
-            String strSentenciaDelete = String.format("DELETE FROM Usuarios WHERE Cedula='%d'", usuario.getCedula());
-
-            System.out.println("Sentencia SQL de eliminación: " + strSentenciaDelete);
-
-            try {
-                objConexion.ejecutarSentenciaSQL(strSentenciaDelete);
-                JOptionPane.showMessageDialog(rootPane, "¡El usuario ha sido eliminado con éxito!");
-            } catch (Exception e) {
-                System.out.println("Error al eliminar usuario: " + e.getMessage());
-                JOptionPane.showMessageDialog(rootPane, "Ocurrió un error al eliminar el usuario.");
+            if (okCxl == JOptionPane.OK_OPTION) {
+                String contraseña = new String(pf.getPassword());
+                if (!contraseña.isEmpty()) {
+                    eliminarUsuario(contraseña);
+                } else {
+                    JOptionPane.showMessageDialog(rootPane, "Debe ingresar una contraseña para confirmar.");
+                }
             }
-
-        } else {
-            JOptionPane.showMessageDialog(rootPane, "Ingrese una cédula para eliminar.");
         }
+    } else {
+        JOptionPane.showMessageDialog(rootPane, "Ingrese una cédula para eliminar.");
+    }
     }//GEN-LAST:event_botonEliminarActionPerformed
-
+    public void eliminarUsuario(String contraseña) {
+    Usuario usuario = recuperarDatosGUI();
+    // Suponiendo que la contraseña debe coincidir con la almacenada en el objeto Usuario
+    if (usuario.getContraseña().equals(contraseña)) {
+        String strSentenciaDelete = String.format("DELETE FROM Usuarios WHERE Cedula='%d'", usuario.getCedula());
+        //System.out.println("Sentencia SQL de eliminación: " + strSentenciaDelete);
+        try {
+            objConexion.ejecutarSentenciaSQL(strSentenciaDelete);
+            JOptionPane.showMessageDialog(rootPane, "¡El usuario ha sido eliminado con éxito!");
+        } catch (Exception e) {
+            System.out.println("Error al eliminar usuario: " + e.getMessage());
+            JOptionPane.showMessageDialog(rootPane, "Ocurrió un error al eliminar el usuario.");
+        }
+    } else {
+        JOptionPane.showMessageDialog(rootPane, "Contraseña incorrecta. No se realizó la eliminación.");
+      }
+    }
     private void RegresarVentanaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RegresarVentanaActionPerformed
         VentanaLogin abc = new VentanaLogin();
         abc.setVisible(true);
         this.setVisible(false);
     }//GEN-LAST:event_RegresarVentanaActionPerformed
+
+    private void txtClaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtClaveActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtClaveActionPerformed
 
     public static void main(String args[]) {
         //</editor-fold>

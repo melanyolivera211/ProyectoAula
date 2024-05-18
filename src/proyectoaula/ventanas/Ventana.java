@@ -106,9 +106,9 @@ public class Ventana extends javax.swing.JFrame {
         jLabel7.setFont(new java.awt.Font("Lucida Sans", 1, 36)); // NOI18N
         jLabel7.setForeground(new java.awt.Color(255, 255, 255));
         jLabel7.setText("GESTIÓN DE ELECTRODOMÉSTICOS");
-        jPanel2.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 50, 670, 50));
+        jPanel2.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 50, 670, 50));
 
-        jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, -20, 1080, 90));
+        jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, -20, 1080, 110));
 
         jPanel3.setBackground(new java.awt.Color(66, 66, 66));
         jPanel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
