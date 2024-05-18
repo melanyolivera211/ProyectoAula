@@ -11,6 +11,15 @@ public class Electrodomestico {
     public String nombreE; 
     public String nroSerie;
     public String marca; 
+     public String cedula;
+
+    public String getCedula() {
+        return cedula;
+    }
+
+    public void setCedula(String cedula) {
+        this.cedula = cedula;
+    }
 
     public String getNombreE() {
         return nombreE;
@@ -35,6 +44,8 @@ public class Electrodomestico {
     public void setMarca(String marca) {
         this.marca = marca;
     }
+    
+    
     
     
     

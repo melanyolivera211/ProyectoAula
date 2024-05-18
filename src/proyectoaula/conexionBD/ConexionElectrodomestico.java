@@ -1,22 +1,13 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package proyectoaula.conexionBD;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-/**
- *
- * @author pc
- */
 public class ConexionElectrodomestico {
-     String currentDir = System.getProperty("user.dir");
-    String strConexionDB = "jdbc:sqlite:" + currentDir + "/BD/usuariosBD.s3db";
+    String currentDir = System.getProperty("user.dir");
+    String strConexionDB = "jdbc:sqlite:" + currentDir + "/BD/BD.s3db";
     Connection conn;
 
     public ConexionElectrodomestico() {

@@ -7,16 +7,14 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 public class ConexionUsuario {
-
     String currentDir = System.getProperty("user.dir");
-    String strConexionDB = "jdbc:sqlite:" + currentDir + "/BD/usuariosBD.s3db";
+    String strConexionDB = "jdbc:sqlite:" + currentDir + "/BD/BD.s3db";
     Connection conn;
 
     public ConexionUsuario() {
         try {
             Class.forName("org.sqlite.JDBC");
             conn = DriverManager.getConnection(strConexionDB);
-
             System.out.println("Conexion establecida");
         } catch (ClassNotFoundException | SQLException e) {
             System.out.println("Error de conexion " + e);

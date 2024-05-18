@@ -138,7 +138,6 @@ public class VentanaLogin extends javax.swing.JFrame {
         } else {
             mostrarMensajeError("Cédula o contraseña incorrecta.");
         }
-
     }//GEN-LAST:event_botonEntrarActionPerformed
     private boolean verificarInicioSesion(String cedula, String contraseña) {
         ConexionUsuario objConexion = new ConexionUsuario();
@@ -148,9 +147,10 @@ public class VentanaLogin extends javax.swing.JFrame {
     private void mostrarMensajeInicioSesionExitoso() {
         JOptionPane.showMessageDialog(rootPane, "Inicio de sesión exitoso.");
     }
-
+    
     private void abrirNuevaVentana() {
-        Ventana nuevaVentana = new Ventana();
+        String cedula = txtCedula.getText();
+        Ventana nuevaVentana = new Ventana(cedula);
         nuevaVentana.setVisible(true);
     }
 

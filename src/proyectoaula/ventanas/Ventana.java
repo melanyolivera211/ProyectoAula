@@ -4,26 +4,35 @@ import java.awt.Color;
 import java.sql.ResultSet;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
-import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.DefaultTableModel;
 import proyectoaula.conexionBD.ConexionElectrodomestico;
+import proyectoaula.conexionBD.ConexionUsuario;
 import proyectoaula.objects.Electrodomestico;
+import java.sql.SQLException;
 
 public class Ventana extends javax.swing.JFrame {
     DefaultTableModel modelo;
+    private String cedulaUsuario;
+    private String cedula;
+    private String cedulaInicial;
+    ConexionUsuario objConexion = new ConexionUsuario();
+    
+    public Ventana(String cedula) {
+    initComponents();
+    this.cedulaInicial = cedula;
+    txtCedula1.setText(cedula);
+    String[] titulos = {"Cedula", "Electrodomestico", "NroSerie", "Marca"};
+    modelo = new DefaultTableModel(null, titulos);
+    tablaelectrodomestico.setModel(modelo);
 
-   
-
-    public Ventana() {
-
-        initComponents();
-        String[] titulos={"Electrodomestico","NroSerie","Marca"};
-        modelo=new DefaultTableModel(null, titulos);
-        tablaelectrodomestico.setModel(modelo);
     }
 
-    
-
+    public Ventana() {
+    initComponents();
+    String[] titulos = {"Cedula", "Electrodomestico", "NroSerie", "Marca"};
+        modelo = new DefaultTableModel(null, titulos);
+        tablaelectrodomestico.setModel(modelo);
+    }
     public void limpiarCampos() {
         txtElectrodomestico.setText("");
         txtNroSerie1.setText("");
@@ -68,7 +77,6 @@ public class Ventana extends javax.swing.JFrame {
         botonGuardar = new javax.swing.JButton();
         Mostrar = new javax.swing.JButton();
         botonEliminar = new javax.swing.JButton();
-        botonBuscar = new javax.swing.JButton();
         Cancelar = new javax.swing.JButton();
         jPanel6 = new javax.swing.JPanel();
         jPanel9 = new javax.swing.JPanel();
@@ -108,7 +116,7 @@ public class Ventana extends javax.swing.JFrame {
         jLabel7.setText("GESTIÓN DE ELECTRODOMÉSTICOS");
         jPanel2.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 50, 670, 50));
 
-        jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, -20, 1080, 110));
+        jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, -20, 1080, 90));
 
         jPanel3.setBackground(new java.awt.Color(66, 66, 66));
         jPanel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -129,11 +137,11 @@ public class Ventana extends javax.swing.JFrame {
         });
         jPanel7.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel8.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jLabel8.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel8.setForeground(new java.awt.Color(255, 255, 255));
         jLabel8.setIcon(new javax.swing.ImageIcon(getClass().getResource("/proyectoaula/imagenes/rayo.png"))); // NOI18N
         jLabel8.setText("Administrar gastos");
-        jPanel7.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 30, 170, 60));
+        jPanel7.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 30, 210, 60));
 
         jPanel3.add(jPanel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 310, 320, 120));
 
@@ -162,11 +170,11 @@ public class Ventana extends javax.swing.JFrame {
         });
         jPanel8.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel4.setForeground(new java.awt.Color(255, 255, 255));
         jLabel4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/proyectoaula/imagenes/home-appliance.png"))); // NOI18N
         jLabel4.setText("Explorar electrodomésticos");
-        jPanel8.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 20, 230, 60));
+        jPanel8.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 30, 270, 60));
 
         jPanel3.add(jPanel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 188, 320, 120));
 
@@ -183,6 +191,8 @@ public class Ventana extends javax.swing.JFrame {
         jPanel3.add(RegresarVentana, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 490, 140, 50));
 
         jPanel1.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 320, 670));
+
+        Principal.setBackground(new java.awt.Color(153, 153, 153));
 
         jPanel4.setBackground(new java.awt.Color(255, 255, 255));
         jPanel4.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -227,7 +237,7 @@ public class Ventana extends javax.swing.JFrame {
                 {null, null, null, null}
             },
             new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+                "Cédula", "Electrodomestico", "NroSerie", "Marca"
             }
         ));
         tablaelectrodomestico.setAltoHead(25);
@@ -280,7 +290,7 @@ public class Ventana extends javax.swing.JFrame {
                 botonEditarActionPerformed(evt);
             }
         });
-        jPanel4.add(botonEditar, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 520, 100, 40));
+        jPanel4.add(botonEditar, new org.netbeans.lib.awtextra.AbsoluteConstraints(840, 460, 100, 40));
 
         botonGuardar.setFont(new java.awt.Font("Lucida Sans", 1, 14)); // NOI18N
         botonGuardar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/proyectoaula/imagenes/salvar.png"))); // NOI18N
@@ -313,18 +323,7 @@ public class Ventana extends javax.swing.JFrame {
                 botonEliminarActionPerformed(evt);
             }
         });
-        jPanel4.add(botonEliminar, new org.netbeans.lib.awtextra.AbsoluteConstraints(660, 520, 110, 40));
-
-        botonBuscar.setFont(new java.awt.Font("Lucida Sans", 1, 14)); // NOI18N
-        botonBuscar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/proyectoaula/imagenes/buscar.png"))); // NOI18N
-        botonBuscar.setText("Buscar");
-        botonBuscar.setBorder(null);
-        botonBuscar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                botonBuscarActionPerformed(evt);
-            }
-        });
-        jPanel4.add(botonBuscar, new org.netbeans.lib.awtextra.AbsoluteConstraints(840, 460, 110, 40));
+        jPanel4.add(botonEliminar, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 520, 110, 40));
 
         Cancelar.setFont(new java.awt.Font("Lucida Sans", 1, 14)); // NOI18N
         Cancelar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/proyectoaula/imagenes/cancelado.png"))); // NOI18N
@@ -335,7 +334,7 @@ public class Ventana extends javax.swing.JFrame {
                 CancelarActionPerformed(evt);
             }
         });
-        jPanel4.add(Cancelar, new org.netbeans.lib.awtextra.AbsoluteConstraints(840, 520, 110, 40));
+        jPanel4.add(Cancelar, new org.netbeans.lib.awtextra.AbsoluteConstraints(750, 520, 110, 40));
 
         Principal.addTab("0", jPanel4);
 
@@ -345,14 +344,15 @@ public class Ventana extends javax.swing.JFrame {
         jLabel9.setFont(new java.awt.Font("Lucida Sans", 1, 14)); // NOI18N
         jLabel9.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         jLabel9.setText("Cédula:");
-        jPanel9.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 50, 70, 30));
+        jPanel9.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 50, 70, 30));
 
+        txtGastos.setFont(new java.awt.Font("Lucida Sans", 0, 14)); // NOI18N
         txtGastos.setBorder(null);
-        jPanel9.add(txtGastos, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 80, 150, 30));
+        jPanel9.add(txtGastos, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 80, 150, 30));
 
-        jSeparator5.setBackground(new java.awt.Color(0, 0, 0));
-        jSeparator5.setForeground(new java.awt.Color(51, 51, 51));
-        jPanel9.add(jSeparator5, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 110, 150, 20));
+        jSeparator5.setBackground(new java.awt.Color(204, 204, 204));
+        jSeparator5.setForeground(new java.awt.Color(204, 204, 204));
+        jPanel9.add(jSeparator5, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 110, 150, 20));
 
         Guardar.setFont(new java.awt.Font("Lucida Sans", 0, 14)); // NOI18N
         Guardar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/proyectoaula/imagenes/salvar.png"))); // NOI18N
@@ -398,46 +398,49 @@ public class Ventana extends javax.swing.JFrame {
         });
         jPanel9.add(Eliminar, new org.netbeans.lib.awtextra.AbsoluteConstraints(580, 510, 120, 40));
 
-        jSeparator6.setBackground(new java.awt.Color(0, 0, 0));
-        jSeparator6.setForeground(new java.awt.Color(0, 0, 0));
-        jPanel9.add(jSeparator6, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 190, 150, 20));
+        jSeparator6.setBackground(new java.awt.Color(204, 204, 204));
+        jSeparator6.setForeground(new java.awt.Color(204, 204, 204));
+        jPanel9.add(jSeparator6, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 190, 150, 20));
 
+        txtuso.setFont(new java.awt.Font("Lucida Sans", 0, 14)); // NOI18N
         txtuso.setBorder(null);
         txtuso.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 txtusoActionPerformed(evt);
             }
         });
-        jPanel9.add(txtuso, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 160, 150, 30));
+        jPanel9.add(txtuso, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 160, 150, 30));
 
         jLabel10.setFont(new java.awt.Font("Lucida Sans", 1, 14)); // NOI18N
         jLabel10.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         jLabel10.setText("Nro.Serie:");
-        jPanel9.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 140, 80, -1));
+        jPanel9.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 140, 80, -1));
 
         jLabel11.setFont(new java.awt.Font("Lucida Sans", 1, 14)); // NOI18N
         jLabel11.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         jLabel11.setText("Gasto:");
-        jPanel9.add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 50, 60, 30));
+        jPanel9.add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 50, 60, 30));
 
         jLabel12.setFont(new java.awt.Font("Lucida Sans", 1, 14)); // NOI18N
         jLabel12.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         jLabel12.setText("Horas de Uso:");
-        jPanel9.add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 140, 110, -1));
+        jPanel9.add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 140, 110, -1));
 
+        txtCedula2.setFont(new java.awt.Font("Lucida Sans", 0, 14)); // NOI18N
         txtCedula2.setBorder(null);
-        jPanel9.add(txtCedula2, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 80, 150, 30));
+        jPanel9.add(txtCedula2, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 80, 150, 30));
 
-        jSeparator7.setBackground(new java.awt.Color(0, 0, 0));
-        jSeparator7.setForeground(new java.awt.Color(51, 51, 51));
-        jPanel9.add(jSeparator7, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 110, 150, 20));
+        jSeparator7.setBackground(new java.awt.Color(204, 204, 204));
+        jSeparator7.setForeground(new java.awt.Color(204, 204, 204));
+        jPanel9.add(jSeparator7, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 110, 150, 20));
 
+        txtNroSerie2.setFont(new java.awt.Font("Lucida Sans", 0, 14)); // NOI18N
         txtNroSerie2.setBorder(null);
-        jPanel9.add(txtNroSerie2, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 160, 150, 30));
+        jPanel9.add(txtNroSerie2, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 160, 150, 30));
 
-        jSeparator8.setBackground(new java.awt.Color(0, 0, 0));
-        jSeparator8.setForeground(new java.awt.Color(0, 0, 0));
-        jPanel9.add(jSeparator8, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 190, 150, 20));
+        jSeparator8.setBackground(new java.awt.Color(204, 204, 204));
+        jSeparator8.setForeground(new java.awt.Color(204, 204, 204));
+        jPanel9.add(jSeparator8, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 190, 150, 20));
 
         gastosTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -481,22 +484,23 @@ public class Ventana extends javax.swing.JFrame {
         });
         jPanel9.add(calcular, new org.netbeans.lib.awtextra.AbsoluteConstraints(830, 460, 120, 40));
 
-        jSeparator9.setBackground(new java.awt.Color(0, 0, 0));
-        jSeparator9.setForeground(new java.awt.Color(0, 0, 0));
-        jPanel9.add(jSeparator9, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 260, 150, 20));
+        jSeparator9.setBackground(new java.awt.Color(204, 204, 204));
+        jSeparator9.setForeground(new java.awt.Color(204, 204, 204));
+        jPanel9.add(jSeparator9, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 260, 150, 20));
 
+        txtFecha.setFont(new java.awt.Font("Lucida Sans", 0, 14)); // NOI18N
         txtFecha.setBorder(null);
         txtFecha.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 txtFechaActionPerformed(evt);
             }
         });
-        jPanel9.add(txtFecha, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 230, 150, 30));
+        jPanel9.add(txtFecha, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 230, 150, 30));
 
         jLabel13.setFont(new java.awt.Font("Lucida Sans", 1, 14)); // NOI18N
         jLabel13.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         jLabel13.setText("Fecha/Hora:");
-        jPanel9.add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 210, 90, -1));
+        jPanel9.add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 210, 90, -1));
 
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
         jPanel6.setLayout(jPanel6Layout);
@@ -528,7 +532,7 @@ public class Ventana extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jPanel8AncestorAdded(javax.swing.event.AncestorEvent evt) {//GEN-FIRST:event_jPanel8AncestorAdded
-        Principal.setSelectedIndex(1);
+        Principal.setSelectedIndex(0);
     }//GEN-LAST:event_jPanel8AncestorAdded
 
     private void CancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CancelarActionPerformed
@@ -537,546 +541,205 @@ public class Ventana extends javax.swing.JFrame {
         txtMarca.setText("");
     }//GEN-LAST:event_CancelarActionPerformed
 
-    private void botonBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonBuscarActionPerformed
-        /*String cedula = txtCedula1.getText();
-        String nroserie = txtNroSerie1.getText();
-        if (cedula.isEmpty() || cedula.isBlank() || nroserie.isEmpty() || nroserie.isBlank()) {
-            JOptionPane.showMessageDialog(rootPane, "Uno o mas campos de texto están vacíos, favor de rellenarlos");
-        } else {
-            buscarElectrodomestico();
-
-        }*/
-    }//GEN-LAST:event_botonBuscarActionPerformed
-
     private void botonEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonEliminarActionPerformed
-        //eliminarElectrodomestico(electrodomestico);
-        EliminarElectrodomestico();
+     EliminarElectrodomestico();
         
     }//GEN-LAST:event_botonEliminarActionPerformed
 
     private void MostrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MostrarActionPerformed
        MostrarElectrodomestico();
        limpiarCampos();
-        /* String cedula = txtCedula1.getText();
-        if (cedula.isEmpty() || cedula.isBlank()) {
-            JOptionPane.showMessageDialog(rootPane, "Debe ingresar la cédula");
-        } else {
-            mostrarElectrodomesticosEnTabla();
-            limpiarCampos();
-        }*/
+       
     }//GEN-LAST:event_MostrarActionPerformed
-    private void guardarElectrodomestico(){
-        ConexionElectrodomestico objConexion =new ConexionElectrodomestico();
-        Electrodomestico electrodomestico =recuperarDatosGUI();
-        String strSentenciaInsert = String.format("INSERT INTO Electrodomesticos (Nombre ,NroSerie ,Marca )" + 
-             "Values('%s', '%s' , '%s')",electrodomestico.getNombreE(),electrodomestico.getNroserie(),electrodomestico.getMarca());
-        
-     objConexion.ejecutarSentenciaSQL(strSentenciaInsert);
-     this.MostrarElectrodomestico();
-        
+    private void guardarElectrodomestico() {
+
+       Electrodomestico electrodomestico = recuperarDatosGUI();
+    
+
+    // Verificar si la cédula actual es diferente a la cédula inicial
+    if (!electrodomestico.getCedula().equals(cedulaInicial)) {
+        JOptionPane.showMessageDialog(rootPane, "No se permite guardar un electrodoméstico con una cédula diferente a la inicialmente ingresada");
+        return;
     }
-    
-    
-    
+
+    String strSentenciaInsert = String.format("INSERT INTO Electrodomesticos (Cedula, Nombre, NroSerie, Marca) "
+            + "VALUES ('%s', '%s', '%s', '%s')", electrodomestico.getCedula(), electrodomestico.getNombreE(), electrodomestico.getNroserie(), electrodomestico.getMarca());
+
+    objConexion.ejecutarSentenciaSQL(strSentenciaInsert);
+    this.MostrarElectrodomestico();
+
+    }
 
     public Electrodomestico recuperarDatosGUI() {
         Electrodomestico electrodomestico = new Electrodomestico();
-    String nombreElectrodomestico = txtElectrodomestico.getText();
-    String nroSerie = txtNroSerie1.getText();
-    String marca = txtMarca.getText();
-
-    if (nombreElectrodomestico.isEmpty() || nroSerie.isEmpty() || marca.isEmpty()) {
-        JOptionPane.showMessageDialog(null, "Rellene todos los campos antes de continuar", "Error", JOptionPane.INFORMATION_MESSAGE);
-        return null; // Devuelve null si hay campos vacíos
-    }
-
-    electrodomestico.setNombreE(txtElectrodomestico.getText());
-    electrodomestico.setNroserie(txtNroSerie1.getText());
-    electrodomestico.setMarca(txtMarca.getText());
-
-    return electrodomestico;
-    }
-    public void MostrarElectrodomestico(){
-        while(modelo.getRowCount()>0){
-            modelo.removeRow(0);
-        
-        }
-        ConexionElectrodomestico objConexion =new ConexionElectrodomestico();
-        try {
-            ResultSet resultado = objConexion.consultarRegistros("SELECT * FROM Electrodomesticos");
-            while(resultado.next()){
-                System.out.println(resultado.getString("Nombre"));
-                System.out.println(resultado.getString("NroSerie"));
-                System.out.println(resultado.getString("Marca"));
-                
-                Object[] electrodomesticos={resultado.getString("Nombre"),resultado.getString("NroSerie"),resultado.getString("Marca")};
-                modelo.addRow(electrodomesticos);
-        }
-        } catch (Exception e) {
-            System.out.println(e);
-        }
-    }
-    public void EliminarElectrodomestico(){
-    ConexionElectrodomestico objConexion =new ConexionElectrodomestico();
-        Electrodomestico electrodomestico =recuperarDatosGUI();
-        String strSentenciaInsert = String.format("DELETE FROM Electrodomesticos WHERE NroSerie=%s",electrodomestico.getNroserie());
-        
-     objConexion.ejecutarSentenciaSQL(strSentenciaInsert);
-     this.MostrarElectrodomestico();
-     
-    }
-    public void EditarElectrodomesticos(){
-        ConexionElectrodomestico objConexion =new ConexionElectrodomestico();
-        Electrodomestico electrodomestico =recuperarDatosGUI();
-        String strSentenciaInsert = String.format("UPDATE Electrodomesticos SET Nombre='%s', " 
-                + "Marca='%s' WHERE NroSerie=%s ",electrodomestico.getNombreE(),electrodomestico.getMarca(),electrodomestico.getNroserie());
-        
-     objConexion.ejecutarSentenciaSQL(strSentenciaInsert);
-     this.MostrarElectrodomestico();
-    
-    }
-    
-    
-    private void botonGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonGuardarActionPerformed
-       guardarElectrodomestico();
-       limpiarCampos();
-        /* String nombreElectrodomestico = txtElectrodomestico.getText();
-        String nroSerie = txtNroSerie1.getText();
-        String marca = txtMarca.getText();
-
-        if (nombreElectrodomestico.isEmpty() || nombreElectrodomestico.isBlank()
-                || nroSerie.isEmpty() || nroSerie.isBlank()
-                || marca.isEmpty() || marca.isBlank()) {
-            JOptionPane.showMessageDialog(null, "Rellene todos los campos antes de continuar", "Error", JOptionPane.INFORMATION_MESSAGE);
-        } else {
-
-            electrodomestico.nombreE = nombreElectrodomestico;
-            electrodomestico.nroSerie = nroSerie;
-            electrodomestico.marca = marca;
-
-            crearElectrodomestico(electrodomestico);
-            limpiarCampos();
-        }*/
-    }//GEN-LAST:event_botonGuardarActionPerformed
-
-    private void botonEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonEditarActionPerformed
-      
-        EditarElectrodomesticos();
-        limpiarCampos();
-        /*  String cedula = txtCedula1.getText();
         String nombreElectrodomestico = txtElectrodomestico.getText();
         String nroSerie = txtNroSerie1.getText();
         String marca = txtMarca.getText();
-        if (nroSerie.isEmpty() || nroSerie.isBlank() || cedula.isEmpty() || cedula.isBlank()) {
-            JOptionPane.showMessageDialog(rootPane, "El campo para ingresar la cedula o el nro.serie está/n vacios, favor rellenar ambos para buscar el electrodoméstico");
-        } else {
-            electrodomestico.nombreE = nombreElectrodomestico;
-            electrodomestico.nroSerie = nroSerie;
-            electrodomestico.marca = marca;
-            editarElectrodomestico(electrodomestico);
+        String cedula = txtCedula1.getText();
 
-            txtElectrodomestico.setText("");
-            txtNroSerie1.setText("");
-            txtMarca.setText("");
-        }*/
+        if (nombreElectrodomestico.isEmpty() || nroSerie.isEmpty() || marca.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Rellene todos los campos antes de continuar", "Error", JOptionPane.INFORMATION_MESSAGE);
+            return null;
+        }
+
+        electrodomestico.setNombreE(txtElectrodomestico.getText());
+        electrodomestico.setNroserie(txtNroSerie1.getText());
+        electrodomestico.setMarca(txtMarca.getText());
+        electrodomestico.setCedula(txtCedula1.getText());
+
+        return electrodomestico;
+    }
+    
+    public void MostrarElectrodomestico() {
+    String cedula = txtCedula1.getText();
+    // Verificar si el campo cedula está lleno
+    if (cedula.isEmpty()) {
+        JOptionPane.showMessageDialog(rootPane, "El campo cédula está vacío");
+        return;
+    }
+    // Limpiar la tabla antes de agregar nuevos datos
+    modelo.setRowCount(0);
+    ConexionElectrodomestico objConexion = new ConexionElectrodomestico();
+    try {
+        // Consulta para obtener los registros con la cedula proporcionada
+        String consulta = String.format("SELECT * FROM Electrodomesticos WHERE Cedula = '%s'", cedula);
+        ResultSet resultado = objConexion.consultarRegistros(consulta);
+        boolean registrosEncontrados = false;
+        // Iterar a través de los resultados y agregar a la tabla si hay registros
+        while (resultado.next()) {
+            registrosEncontrados = true;
+            Object[] electrodomesticos = {
+                resultado.getString("Cedula"),
+                resultado.getString("Nombre"),
+                resultado.getString("NroSerie"),
+                resultado.getString("Marca"),
+            };
+            modelo.addRow(electrodomesticos);
+        }
+        // Mostrar mensaje si no se encontraron registros
+        if (!registrosEncontrados) {
+            JOptionPane.showMessageDialog(rootPane, "No se encontraron registros con la cédula proporcionada");
+        } else {
+            JOptionPane.showMessageDialog(rootPane, "Se encontraron registros con la cédula proporcionada");
+        }
+    } catch (Exception e) {
+        System.out.println(e);
+    }
+    // Establecer la cédula en el campo de texto nuevamente
+    txtCedula1.setText(cedula);
+   }
+    
+    //metodo para eliminar
+    public void EliminarElectrodomestico() {
+    Electrodomestico electrodomestico = recuperarDatosGUI();
+    String strSentenciaDelete = String.format("DELETE FROM Electrodomesticos WHERE NroSerie='%s'", electrodomestico.getNroserie());
+
+    objConexion.ejecutarSentenciaSQL(strSentenciaDelete);
+    this.MostrarElectrodomestico();
+    }
+    
+    //metodo para editar
+    public void EditarElectrodomesticos() {
+    String cedula = txtCedula1.getText(); // Obtener la cédula ingresada
+
+    // Verificar si el campo cédula está vacío
+    if (cedula.isEmpty()) {
+        JOptionPane.showMessageDialog(rootPane, "El campo cédula está vacío");
+        return;
+    }
+    Electrodomestico electrodomestico = recuperarDatosGUI();
+    // Verificar si se intenta cambiar la cédula
+    if (!cedulaInicial.equals(cedula) && existeElectrodomesticoConCedula(cedula)) {
+        JOptionPane.showMessageDialog(rootPane, "Ya existe un electrodoméstico registrado con la cédula ingresada");
+        return;
+    }
+    String strSentenciaUpdate = String.format("UPDATE Electrodomesticos SET Cedula='%s', Nombre='%s', Marca='%s' WHERE NroSerie='%s'", cedula, electrodomestico.getNombreE(), electrodomestico.getMarca(), electrodomestico.getNroserie());
+    objConexion.ejecutarSentenciaSQL(strSentenciaUpdate);
+
+    // Actualizar la tabla para mostrar los electrodomésticos actualizados
+    DefaultTableModel modelo = (DefaultTableModel) tablaelectrodomestico.getModel();
+    modelo.setRowCount(0);
+    try {
+        // Consulta para obtener los electrodomésticos con la cédula actual
+        String consulta = String.format("SELECT * FROM Electrodomesticos WHERE Cedula = '%s'", cedula);
+        ResultSet resultado = objConexion.consultarRegistros(consulta);
+        boolean registrosEncontrados = false;
+        // Iterar a través de los resultados y agregar a la tabla
+        while (resultado.next()) {
+            registrosEncontrados = true;
+            String cedulaDB = resultado.getString("Cedula");
+            String nombre = resultado.getString("Nombre");
+            String nroSerie = resultado.getString("NroSerie");
+            String marca = resultado.getString("Marca");
+            Object[] electrodomesticos = {
+                cedulaDB,
+                nombre,
+                nroSerie,
+                marca
+            };
+            modelo.addRow(electrodomesticos);
+        }
+
+        // Mostrar mensaje si no se encontraron registros
+        if (!registrosEncontrados) {
+            JOptionPane.showMessageDialog(rootPane, "No se encontraron electrodomésticos con la cédula actual");
+        } else {
+            JOptionPane.showMessageDialog(rootPane, "Se actualizó el electrodoméstico y se mostraron los registros con la cédula actual");
+        }
+    } catch (Exception e) {
+        System.out.println(e);
+    }
+}
+
+    private boolean existeElectrodomesticoConCedula(String cedula) {
+    // Verificar si existe un electrodoméstico con la cédula especificada en la base de datos
+    String consulta = String.format("SELECT COUNT(*) FROM Electrodomesticos WHERE Cedula = '%s'", cedula);
+    ResultSet resultado = objConexion.consultarRegistros(consulta);
+
+    try {
+        if (resultado.next()) {
+            int count = resultado.getInt(1);
+            return count > 0;
+        }
+    } catch (SQLException e) {
+        System.out.println(e);
+    }
+
+    return false;
+    }
+    private void botonGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonGuardarActionPerformed
+       guardarElectrodomestico();
+       limpiarCampos();
+    }//GEN-LAST:event_botonGuardarActionPerformed
+
+    private void botonEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonEditarActionPerformed
+    EditarElectrodomesticos();
+    limpiarCampos();
     }//GEN-LAST:event_botonEditarActionPerformed
 
     private void tablaelectrodomesticoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaelectrodomesticoMouseClicked
-        if(evt.getClickCount()==1){
-            JTable recetor=(JTable)evt.getSource();
+        if (evt.getClickCount() == 1) {
+            JTable recetor = (JTable) evt.getSource();
             
-            txtElectrodomestico.setText(recetor.getModel().getValueAt(recetor.getSelectedRow(), 0).toString());
-            txtNroSerie1.setText(recetor.getModel().getValueAt(recetor.getSelectedRow(), 1).toString());
-            txtMarca.setText(recetor.getModel().getValueAt(recetor.getSelectedRow(), 2).toString());
-            
-            
+            txtCedula1.setText(recetor.getModel().getValueAt(recetor.getSelectedRow(), 0).toString());
+            txtElectrodomestico.setText(recetor.getModel().getValueAt(recetor.getSelectedRow(), 1).toString());
+            txtNroSerie1.setText(recetor.getModel().getValueAt(recetor.getSelectedRow(), 2).toString());
+            txtMarca.setText(recetor.getModel().getValueAt(recetor.getSelectedRow(), 3).toString());
+
             botonGuardar.setEnabled(false);
             botonEditar.setEnabled(true);
             botonEliminar.setEnabled(true);
-            
+
         }
-        
     }//GEN-LAST:event_tablaelectrodomesticoMouseClicked
     //Aquí empiezan los métodos de gastos
-
-   /* private void guardarGastos(Gastos gastos) {
-        String cedula = txtCedula2.getText();
-        String archivoUsuario = cedula + ".txt";
-        File rutaArchivo = new File(crearblock + archivoUsuario);
-
-        if (rutaArchivo.exists()) {
-            String nserie = txtNroSerie2.getText() + ".txt";
-            String electrodomesticoBD = rutaelectrodomestico + elec + cedula + "_electrodomesticos" + elec;
-            File rutaelectrodomestico = new File(electrodomesticoBD, nserie);
-
-            if (rutaelectrodomestico.exists()) {
-                String gastoBD = rutaelectrodomestico.getAbsolutePath() + "_gastos" + elec;
-                File creargasto = new File(gastoBD);
-                File gastoGuardar = new File(creargasto, gastos.fecha + ".txt");
-
-                try {
-                    if (creargasto.exists()) {
-                        gastoGuardar.createNewFile();
-                        Writer escritorDeArchivo = new FileWriter(gastoGuardar);
-                        String registrogasto = "gasto: " + gastos.gasto + "\n";
-                        registrogasto += "fecha: " + gastos.fecha + "\n";
-                        registrogasto += "horas: " + gastos.horas + "\n";
-                        escritorDeArchivo.write(registrogasto);
-                        escritorDeArchivo.flush();
-                        escritorDeArchivo.close();
-                        mostrarGastosEnTabla(cedula, nserie);
-
-                        JOptionPane.showMessageDialog(rootPane, "Gasto registrado");
-
-                    } else {
-                        creargasto.mkdirs();
-                        gastoGuardar.createNewFile();
-                        Writer escritorDeArchivo = new FileWriter(gastoGuardar);
-                        String registrogasto = "gasto: " + gastos.gasto + "\n";
-                        registrogasto += "fecha: " + gastos.fecha + "\n";
-                        registrogasto += "horas: " + gastos.horas + "\n";
-                        escritorDeArchivo.write(registrogasto);
-                        escritorDeArchivo.flush();
-                        escritorDeArchivo.close();
-                        mostrarGastosEnTabla(cedula, nserie);
-
-                        JOptionPane.showMessageDialog(rootPane, "Gasto registrado");
-
-                    }
-                } catch (IOException e) {
-                    JOptionPane.showMessageDialog(null, "Error al registrar gasto: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-                }
-
-            } else {
-                JOptionPane.showMessageDialog(rootPane, "El electrodoméstico no existe");
-            }
-        } else {
-            JOptionPane.showMessageDialog(rootPane, "El usuario no existe");
-        }
-    }
-
-    private void mostrarGastosEnTabla(String cedula, String nserie) {
-        String electrodomesticoBD = rutaelectrodomestico + elec + cedula + "_electrodomesticos" + elec;
-
-        File directorioElectrodomesticos = new File(electrodomesticoBD);
-        File[] archivos = directorioElectrodomesticos.listFiles();
-
-        if (archivos != null) {
-            DefaultTableModel modelo = new DefaultTableModel();
-            modelo.addColumn("Electrodoméstico");
-            modelo.addColumn("Nro. de Serie");
-            modelo.addColumn("Gasto");
-            modelo.addColumn("Fecha");
-            modelo.addColumn("Horas");
-
-            for (File archivo : archivos) {
-                String numeroSerie = archivo.getName();
-                String rutaGastos = electrodomesticoBD + elec + numeroSerie + "_gastos" + elec;
-
-                File directorioGastos = new File(rutaGastos);
-                File[] archivosGastos = directorioGastos.listFiles();
-
-                if (archivosGastos != null) {
-                    for (File archivoGasto : archivosGastos) {
-                        try {
-                            BufferedReader lectoreelctrodomestico = new BufferedReader(new FileReader(electrodomesticoBD + nserie));
-                            String linea;
-                            String electro = "";
-                            String nroserie = "";
-                            while ((linea = lectoreelctrodomestico.readLine()) != null) {
-                                if (linea.startsWith("Electrodomestico:")) {
-                                    electro = linea.substring(18);
-                                } else if (linea.startsWith("nro.serie:")) {
-                                    nroserie = linea.substring(11);
-                                }
-                            }
-                            lectoreelctrodomestico.close();
-
-                            BufferedReader lectorGastos = new BufferedReader(new FileReader(archivoGasto.getAbsolutePath()));
-                            String gasto = "";
-                            String fecha = "";
-                            String horas = "";
-
-                            while ((linea = lectorGastos.readLine()) != null) {
-                                if (linea.startsWith("gasto:")) {
-                                    gasto = linea.substring(7);
-                                } else if (linea.startsWith("fecha:")) {
-                                    fecha = linea.substring(7);
-                                } else if (linea.startsWith("horas:")) {
-                                    horas = linea.substring(7);
-                                }
-                            }
-
-                            modelo.addRow(new Object[]{electro, nroserie, gasto, fecha, horas});
-                            lectorGastos.close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-            }
-
-            gastosTable.setModel(modelo);
-        } else {
-            JOptionPane.showMessageDialog(rootPane, "No hay electrodomésticos registrados.");
-        }
-    }
-
-    private void calcularPromedioGastos() {
-        String cedula = txtCedula2.getText();
-        String archivoUsuario = cedula + ".txt";
-        File rutaArchivo = new File(crearblock + archivoUsuario);
-
-        if (rutaArchivo.exists()) {
-            String nserie = txtNroSerie2.getText() + ".txt";
-            String electrodomesticoBD = rutaelectrodomestico + elec + cedula + "_electrodomesticos" + elec;
-            File rutaelectrodomestico = new File(electrodomesticoBD, nserie);
-
-            if (rutaelectrodomestico.exists()) {
-                String rutaGastos = electrodomesticoBD + elec + nserie + "_gastos" + elec;
-
-                File directorioGastos = new File(rutaGastos);
-                File[] archivosGastos = directorioGastos.listFiles();
-
-                if (archivosGastos != null && archivosGastos.length > 0) {
-                    double sumaGastos = 0;
-                    int cantidadGastos = 0;
-
-                    for (File archivoGasto : archivosGastos) {
-                        try {
-                            BufferedReader lectorGastos = new BufferedReader(new FileReader(archivoGasto.getAbsolutePath()));
-                            String linea;
-                            double gasto = 0;
-                            double horas = 0;
-                            
-
-                            while ((linea = lectorGastos.readLine()) != null) {
-                                if (linea.startsWith("gasto:")||linea.startsWith("horas:")) {
-                                    gasto = Double.parseDouble(linea.substring(7));
-                                    horas = Double.parseDouble(linea.substring(7));
-                                    double calcular = gasto * horas * 30;
-                                    sumaGastos += calcular;
-                                    cantidadGastos++;
-                                }
-                            }
-
-                            lectorGastos.close();
-                        } catch (IOException | NumberFormatException e) {
-                            e.printStackTrace();
-                        }
-                    }
-
-                    if (cantidadGastos > 0) {
-                        double promedio = sumaGastos/cantidadGastos;
-                        cantidadGastos =0;
-                        JOptionPane.showMessageDialog(rootPane, "El promedio de gastos es: " + promedio+" kwh ");
-                        double costo = sumaGastos * 500;
-                        JOptionPane.showMessageDialog(rootPane, "El costo aproximadado en pesos del electrodomestico: " + txtNroSerie2.getText()+" es "+costo);
-                    } else {
-                        JOptionPane.showMessageDialog(rootPane, "No hay gastos registrados para calcular el promedio.");
-                    }
-                } else {
-                    JOptionPane.showMessageDialog(rootPane, "No hay archivos de gastos para calcular el promedio.");
-                }
-            } else {
-                JOptionPane.showMessageDialog(rootPane, "El electrodoméstico no existe");
-            }
-        } else {
-            JOptionPane.showMessageDialog(rootPane, "El usuario no existe");
-        }
-    }
-
-    private void mostrarGastosEnTablaboton(String cedula, String numeroSerie) {
-        String electrodomesticoBD = rutaelectrodomestico + elec + cedula + "_electrodomesticos" + elec;
-
-        File directorioElectrodomesticos = new File(electrodomesticoBD);
-
-        if (directorioElectrodomesticos.exists()) {
-
-            String rutagasto = electrodomesticoBD + elec + numeroSerie + ".txt" + "_gastos" + elec;
-            File directoriogasto = new File(rutagasto);
-            File[] archivosGastos = directoriogasto.listFiles();
-            if (directoriogasto.exists()) {
-                DefaultTableModel modelo = new DefaultTableModel();
-                modelo.addColumn("Electrodoméstico");
-                modelo.addColumn("Nro. de Serie");
-                modelo.addColumn("Gasto");
-                modelo.addColumn("Fecha");
-                modelo.addColumn("Horas");
-                for (File archivoGasto : archivosGastos) {
-                    try {
-                        BufferedReader lectoreelctrodomestico = new BufferedReader(new FileReader(electrodomesticoBD + numeroSerie + ".txt"));
-                        String linea;
-                        String electro = "";
-                        String nroserie = "";
-                        while ((linea = lectoreelctrodomestico.readLine()) != null) {
-                            if (linea.startsWith("Electrodomestico:")) {
-                                electro = linea.substring(18);
-                            } else if (linea.startsWith("nro.serie:")) {
-                                nroserie = linea.substring(11);
-                            }
-                        }
-                        lectoreelctrodomestico.close();
-
-                        BufferedReader lectorGastos = new BufferedReader(new FileReader(archivoGasto.getAbsolutePath()));
-                        String gasto = "";
-                        String fecha = "";
-                        String horas = "";
-
-                        while ((linea = lectorGastos.readLine()) != null) {
-                            if (linea.startsWith("gasto:")) {
-                                gasto = linea.substring(7);
-                            } else if (linea.startsWith("fecha:")) {
-                                fecha = linea.substring(7);
-                            } else if (linea.startsWith("horas:")) {
-                                horas = linea.substring(7);
-                            }
-                        }
-
-                        modelo.addRow(new Object[]{electro, nroserie, gasto, fecha, horas});
-                        lectorGastos.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    gastosTable.setModel(modelo);
-                }
-            } else {
-                JOptionPane.showMessageDialog(rootPane, "Electrodoméstico no registrado.");
-            }
-
-        } else {
-            JOptionPane.showMessageDialog(rootPane, "Usuario no registrado.");
-        }
-    }
-
-    private void editarGastos(Gastos gastos) {
-        String cedula = txtCedula2.getText();
-        String archivoUsuario = cedula + ".txt";
-        File rutaArchivo = new File(crearblock + archivoUsuario);
-
-        if (rutaArchivo.exists()) {
-            String nserie = txtNroSerie2.getText() + ".txt";
-            String electrodomesticoBD = rutaelectrodomestico + elec + txtCedula2.getText() + "_electrodomesticos" + elec;
-            File rutaelectrodomesti = new File(electrodomesticoBD, nserie);
-
-            if (rutaelectrodomesti.exists()) {
-                String rutagasto = electrodomesticoBD + elec + nserie + "_gastos" + elec;
-                File gastoBD = new File(rutagasto, gastos.fecha + ".txt");
-                if (gastoBD.exists()) {
-                    try {
-                        BufferedReader lector = new BufferedReader(new FileReader(gastoBD.getAbsolutePath()));
-                        String linea;
-                        StringBuilder datos = new StringBuilder();
-                        while ((linea = lector.readLine()) != null) {
-                            if (linea.startsWith("gasto:") && !txtGastos.getText().equals("")) {
-                                datos.append("gasto: ").append(gastos.gasto).append("\n");
-                            } else if (linea.startsWith("fecha:") && !txtFecha.getText().equals("")) {
-                                datos.append("fecha: ").append(gastos.fecha).append("\n");
-                            } else if (linea.startsWith("fecha:") && !txtuso.getText().equals("")) {
-                                datos.append("horas: ").append(gastos.horas).append("\n");
-                            } else {
-                                datos.append(linea).append("\n");
-                            }
-                        }
-                        lector.close();
-                        BufferedWriter escritor = new BufferedWriter(new FileWriter(gastoBD.getAbsolutePath()));
-                        escritor.write(datos.toString());
-                        escritor.close();
-                        JOptionPane.showMessageDialog(rootPane, "¡El archivo ha sido editado con éxito!");
-                    } catch (IOException e) {
-                        JOptionPane.showMessageDialog(rootPane, "No se ha podido el gasto");
-                    }
-                } else {
-                    JOptionPane.showMessageDialog(rootPane, "El gasto no existe");
-                }
-
-            } else {
-                JOptionPane.showMessageDialog(rootPane, "El electrodoméstico no existe");
-            }
-        } else {
-            JOptionPane.showMessageDialog(rootPane, "El usuario no existe");
-        }
-    }
-
-    private void eliminarGasto(Gastos gastos) {
-        String cedula = txtCedula2.getText();
-        String archivoUsuario = cedula + ".txt";
-        File rutaArchivo = new File(crearblock + archivoUsuario);
-
-        if (rutaArchivo.exists()) {
-            String nserie = txtNroSerie2.getText() + ".txt";
-            String electrodomesticoBD = rutaelectrodomestico + elec + txtCedula2.getText() + "_electrodomesticos" + elec;
-            File rutaelectrodomesti = new File(electrodomesticoBD, nserie);
-
-            if (rutaelectrodomesti.exists()) {
-                String rutagasto = electrodomesticoBD + elec + nserie + "_gastos" + elec;
-                File gastoBD = new File(rutagasto, gastos.fecha + ".txt");
-                if (gastoBD.exists()) {
-                    try {
-                        if (gastoBD.delete()) {
-                            JOptionPane.showMessageDialog(rootPane, "El gasto ha sido eliminado con exito");
-                        } else {
-                            JOptionPane.showMessageDialog(rootPane, "El gasto no se ha podido eliminar");
-                        }
-                        JOptionPane.showMessageDialog(rootPane, "¡El archivo ha sido eliminado con éxito!");
-                    } catch (SecurityException e) {
-                        JOptionPane.showMessageDialog(rootPane, "No se ha podido el gasto");
-                    }
-                } else {
-                    JOptionPane.showMessageDialog(rootPane, "El gasto no existe");
-                }
-
-            } else {
-                JOptionPane.showMessageDialog(rootPane, "El electrodoméstico no existe");
-            }
-        } else {
-            JOptionPane.showMessageDialog(rootPane, "El usuario no existe");
-        }
-
-    }
-*/
+    
     private void GuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_GuardarActionPerformed
-        /*if (!txtCedula2.getText().isBlank() || !txtCedula2.getText().isEmpty()) {
-            if (!txtNroSerie2.getText().isBlank() || !txtNroSerie2.getText().isEmpty()) {
-                if (!txtFecha.getText().isBlank() || !txtFecha.getText().isEmpty() || !txtGastos.getText().isBlank() || !txtGastos.getText().isEmpty() || !txtuso.getText().isBlank() || !txtuso.getText().isEmpty()) {
-                    if (txtGastos.getText().matches("\\d+(\\.\\d+)?") && txtuso.getText().matches("\\d+(\\.\\d+)?")) {
-                        String fecha = txtFecha.getText();
-                        double consumo = Double.parseDouble(txtGastos.getText());
-                        double uso = Double.parseDouble(txtuso.getText());
-                        gastos.fecha = fecha;
-                        gastos.gasto = consumo;
-                        gastos.horas = uso;
-                        guardarGastos(gastos);
-                        txtuso.setText("");
-                        txtGastos.setText("");
-                    } else {
-                        JOptionPane.showMessageDialog(rootPane, "El campo de texto para gastos tiene que ser rellenado con números");
-                    }
-                } else {
-                    JOptionPane.showMessageDialog(rootPane, "Ingrese la fecha(AA-MM-DD) y/o el gasto del electrodomestico");
-                }
-            } else {
-                JOptionPane.showMessageDialog(rootPane, "Ingrese el número de serie del electrodoméstico");
-            }
-        } else {
-            JOptionPane.showMessageDialog(rootPane, "Ingrese la cédula del usuario");
-        }*/
+    
     }//GEN-LAST:event_GuardarActionPerformed
 
     private void Mostrar1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Mostrar1ActionPerformed
-       /* String cedula = txtCedula2.getText();
-        String numeroSerie = txtNroSerie2.getText();
-
-        if (!cedula.isEmpty() || cedula.isBlank()) {
-            if (!numeroSerie.isEmpty() || numeroSerie.isBlank()) {
-                mostrarGastosEnTablaboton(cedula, numeroSerie);
-            } else {
-                JOptionPane.showMessageDialog(rootPane, "Ingrese el número de serie antes de mostrar los gastos.");
-            }
-        } else {
-            JOptionPane.showMessageDialog(rootPane, "Ingrese la cédula");
-
-        }*/
+      
     }//GEN-LAST:event_Mostrar1ActionPerformed
 
     private void EditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EditarActionPerformed
@@ -1159,7 +822,7 @@ public class Ventana extends javax.swing.JFrame {
     }//GEN-LAST:event_jPanel8MouseClicked
 
     private void jPanel8MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanel8MouseMoved
-        jPanel8.setBackground(Color.white);
+        jPanel8.setBackground(new Color(205,205,205));
     }//GEN-LAST:event_jPanel8MouseMoved
 
     private void jPanel8MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanel8MouseExited
@@ -1171,7 +834,7 @@ public class Ventana extends javax.swing.JFrame {
     }//GEN-LAST:event_jPanel7MouseClicked
 
     private void jPanel7MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanel7MouseMoved
-        jPanel7.setBackground(Color.white);
+        jPanel7.setBackground(new Color(205,205,205));
     }//GEN-LAST:event_jPanel7MouseMoved
 
     private void jPanel7MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanel7MouseExited
@@ -1224,7 +887,6 @@ public class Ventana extends javax.swing.JFrame {
     private javax.swing.JButton Mostrar1;
     private javax.swing.JTabbedPane Principal;
     private javax.swing.JButton RegresarVentana;
-    private javax.swing.JButton botonBuscar;
     private javax.swing.JButton botonEditar;
     private javax.swing.JButton botonEliminar;
     private javax.swing.JButton botonGuardar;
