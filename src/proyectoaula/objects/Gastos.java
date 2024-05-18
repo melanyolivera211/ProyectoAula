@@ -9,16 +9,51 @@ package proyectoaula.objects;
  */
 public class Gastos {
    
-    public double gasto;
-    public double horas;
+    public int cedula;
+    public String NroSerie;
+    public int gasto;
+    public int hora;
     public String fecha;
+  String promedio;
 
-    public double getGasto() {
+    public String getPromedio() {
+        return promedio;
+    }
+
+    public void setPromedio(String promedio) {
+        this.promedio = promedio;
+    }
+
+    public int getCedula() {
+        return cedula;
+    }
+
+    public void setCedula(int cedula) {
+        this.cedula = cedula;
+    }
+
+    public String getNroSerie() {
+        return NroSerie;
+    }
+
+    public void setNroSerie(String NroSerie) {
+        this.NroSerie = NroSerie;
+    }
+
+    public int getGasto() {
         return gasto;
     }
 
-    public void setGasto(double gasto) {
+    public void setGasto(int gasto) {
         this.gasto = gasto;
+    }
+
+    public int getHora() {
+        return hora;
+    }
+
+    public void setHora(int hora) {
+        this.hora = hora;
     }
 
     public String getFecha() {
@@ -27,14 +62,6 @@ public class Gastos {
 
     public void setFecha(String fecha) {
         this.fecha = fecha;
-    }
-    
-    public double gethoras() {
-        return horas;
-    }
-
-    public void sethoras(double horas) {
-        this.horas = horas;
-    }
+    }    
     
 }
