@@ -159,7 +159,7 @@ public class Ventana extends javax.swing.JFrame {
         jLabel7.setText("GESTIÓN DE ELECTRODOMÉSTICOS");
         jPanel2.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 50, 670, 50));
 
-        jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, -20, 1080, 90));
+        jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, -20, 1080, 100));
 
         jPanel3.setBackground(new java.awt.Color(66, 66, 66));
         jPanel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -620,24 +620,39 @@ public class Ventana extends javax.swing.JFrame {
        limpiarCampos();
        
     }//GEN-LAST:event_MostrarActionPerformed
-    private void guardarElectrodomestico() {
 
-       Electrodomestico electrodomestico = recuperarDatosGUI();
+private void guardarElectrodomestico() {
+    Electrodomestico electrodomestico = recuperarDatosGUI();  
+    if (electrodomestico == null) {
+        return; // Si faltan campos, salir sin guardar
+    }
     
-
-    // Verificar si la cédula actual es diferente a la cédula inicial
     if (!electrodomestico.getCedula().equals(cedulaInicial)) {
         JOptionPane.showMessageDialog(rootPane, "No se permite guardar un electrodoméstico con una cédula diferente a la inicialmente ingresada");
         return;
     }
 
+    if (nroSerieExistente(electrodomestico.getNroserie())) {
+        JOptionPane.showMessageDialog(rootPane, "Ya existe un electrodoméstico con ese número de serie");
+        return;
+    }
+
     String strSentenciaInsert = String.format("INSERT INTO Electrodomesticos (Cedula, Nombre, NroSerie, Marca) "
             + "VALUES ('%s', '%s', '%s', '%s')", electrodomestico.getCedula(), electrodomestico.getNombreE(), electrodomestico.getNroserie(), electrodomestico.getMarca());
-
     objConexion.ejecutarSentenciaSQL(strSentenciaInsert);
     this.MostrarElectrodomestico();
+}
 
+private boolean nroSerieExistente(String nroSerie) {
+    try {
+        String strSentenciaSelect = String.format("SELECT * FROM Electrodomesticos WHERE NroSerie = '%s'", nroSerie);
+        ResultSet resultado = objConexion.consultarRegistros(strSentenciaSelect);
+        return resultado.next();
+    } catch (Exception e) {
+        System.out.println(e);
+        return false;
     }
+}
 
     public Electrodomestico recuperarDatosGUI() {
         Electrodomestico electrodomestico = new Electrodomestico();
@@ -847,13 +862,13 @@ public class Ventana extends javax.swing.JFrame {
     public Gastos recuperarDatosGUIA() {
         Gastos gastos = new Gastos();
         int cedula = (txtCedula2.getText().isEmpty()) ?0: Integer.parseInt(txtCedula2.getText());
-        int gasto = (txtGastos.getText().isEmpty()) ?0: Integer.parseInt(txtGastos.getText());
+        float gasto = (txtGastos.getText().isEmpty()) ?0: Float.parseFloat(txtGastos.getText());
         String nroSerie = txtNroSerie2.getText();
         int hora = (txtuso.getText().isEmpty()) ?0: Integer.parseInt(txtuso.getText());
         String fecha = txtFecha.getText();
         float promedio = (gasto*hora*30);
         String prom = String.valueOf(promedio);
-        txtPromedio.setText(prom);
+        txtPromedio.setText("Promedio de gasto (Kw) por mes: "+prom);
 
         if (txtCedula2.getText().isEmpty() || nroSerie.isEmpty()) {
             JOptionPane.showMessageDialog(null, "Rellene todos los campos antes de continuar", "Error", JOptionPane.INFORMATION_MESSAGE);
@@ -1068,8 +1083,8 @@ public class Ventana extends javax.swing.JFrame {
         }
 
     }
-
-   public void crearPDFGastos(String cedula) {
+     
+    public void crearPDFGastos1(String cedula) {
     Document document = new Document(PageSize.LETTER);
     try {
         String fileName = cedula + "_gastos.pdf";
@@ -1081,10 +1096,9 @@ public class Ventana extends javax.swing.JFrame {
         titulo.setAlignment(Paragraph.ALIGN_CENTER);
         document.add(titulo);
         
-        // Añadir un espacio en blanco después del título
         document.add(new Paragraph("\n"));
 
-        // Crear tabla PDF con 6 columnas
+
         PdfPTable table = new PdfPTable(6);
         table.addCell("Cedula");
         table.addCell("NroSerie");
@@ -1100,6 +1114,8 @@ public class Ventana extends javax.swing.JFrame {
 
         // Añadir datos a la tabla
         boolean hayDatos = false;
+        float sumaGastoMes = 0;
+        int contadorGastoMes = 0;
         while (rs.next()) {
             hayDatos = true;
             table.addCell(rs.getString("Cedula"));
@@ -1108,6 +1124,8 @@ public class Ventana extends javax.swing.JFrame {
             table.addCell(rs.getString("HorasUso"));
             table.addCell(rs.getString("Fecha"));
             table.addCell(rs.getString("GastoMes"));
+            sumaGastoMes += rs.getFloat("GastoMes");
+            contadorGastoMes++;
         }
 
         if (!hayDatos) {
@@ -1116,6 +1134,15 @@ public class Ventana extends javax.swing.JFrame {
             // Añadir tabla al documento PDF
             document.add(table);
             document.add(new Paragraph(" ")); // Añadir espacio en blanco
+
+            // Calcular promedio y valor en pesos
+            float promedio = (contadorGastoMes > 0) ? sumaGastoMes / contadorGastoMes : 0;
+            float valorPesos = promedio * 500;
+            
+            // Añadir promedio y valor en pesos al documento
+            Paragraph promedioValor = new Paragraph(String.format("Promedio de KwH usados en el mes por estos electrodomésticos: %.2f\nValor en pesos: %.2f", promedio, valorPesos));
+            document.add(promedioValor);
+
             JOptionPane.showMessageDialog(null, "PDF de gastos creado con éxito!");
         }
 
@@ -1125,7 +1152,8 @@ public class Ventana extends javax.swing.JFrame {
     } finally {
         document.close();
     }
-}
+    }
+  
     
     private void GuardarGastosGastosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_GuardarGastosGastosActionPerformed
     if (txtCedula2.getText().isEmpty() || txtNroSerie2.getText().isEmpty() || txtGastos.getText().isEmpty() || txtuso.getText().isEmpty() || txtFecha.getText().isEmpty()) {
@@ -1232,7 +1260,7 @@ public class Ventana extends javax.swing.JFrame {
      if (txtCedula2.getText().isEmpty()&&txtNroSerie2.getText().isEmpty()) {
             JOptionPane.showMessageDialog(null, "Por favor, ingrese la cedula y/o el numero de serie");
         } else {
-            crearPDFGastos(txtCedula2.getText());
+            crearPDFGastos1(txtCedula2.getText());
         }    
     }//GEN-LAST:event_guardarpdf_gastos1ActionPerformed
 

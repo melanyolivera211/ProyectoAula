@@ -11,7 +11,7 @@ public class Gastos {
    
     public int cedula;
     public String NroSerie;
-    public int gasto;
+    public float gasto;
     public int hora;
     public String fecha;
   String promedio;
@@ -40,11 +40,11 @@ public class Gastos {
         this.NroSerie = NroSerie;
     }
 
-    public int getGasto() {
+    public float getGasto() {
         return gasto;
     }
 
-    public void setGasto(int gasto) {
+    public void setGasto(float gasto) {
         this.gasto = gasto;
     }
 

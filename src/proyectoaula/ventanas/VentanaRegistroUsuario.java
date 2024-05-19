@@ -221,7 +221,7 @@ public class VentanaRegistroUsuario extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void botonGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonGuardarActionPerformed
-       if (camposVacios()) {
+    if (camposVacios()) {
         JOptionPane.showMessageDialog(rootPane, "Todos los campos deben estar llenos.");
     } else if (!validarCedula()) {
         JOptionPane.showMessageDialog(rootPane, "La cédula debe tener entre 8 y 10 dígitos enteros.");
