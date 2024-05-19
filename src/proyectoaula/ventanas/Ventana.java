@@ -1,6 +1,16 @@
 package proyectoaula.ventanas;
 
+import com.lowagie.text.Document;
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.PageSize;
+import com.lowagie.text.Paragraph;
+import com.lowagie.text.pdf.PdfPTable;
+import com.lowagie.text.pdf.PdfWriter;
 import java.awt.Color;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.sql.ResultSet;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
@@ -19,7 +29,7 @@ public class Ventana extends javax.swing.JFrame {
     private String cedula;
     private String cedulaInicial;
     ConexionUsuario objConexion = new ConexionUsuario();
-    
+    Document document = new Document();
     public Ventana(String cedula) {
     initComponents();
     this.cedulaInicial = cedula;
@@ -27,11 +37,34 @@ public class Ventana extends javax.swing.JFrame {
     String[] titulos = {"Cedula", "Electrodomestico", "NroSerie", "Marca"};
     modelo = new DefaultTableModel(null, titulos);
     tablaelectrodomestico.setModel(modelo);
-     String[] titulos2 = {"Cedula","NroSerie","Gastos","HorasUso","Fecha","GastMes"};
+     String[] titulos2 = {"Cedula","NroSerie","KWH","HorasUso","Fecha","GastMes"};
       modelo2 = new DefaultTableModel(null,titulos2);
         gastosTable.setModel(modelo2);
          this.cedula = cedula;
         txtCedula2.setText(cedula);
+           gastosTable.addMouseListener(new MouseAdapter() {
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            int filaSeleccionada = gastosTable.getSelectedRow();
+            if (filaSeleccionada != -1) { // Verificar que se haya seleccionado una fila
+                // Obtener los datos de la fila seleccionada
+                String cedula = (String) modelo2.getValueAt(filaSeleccionada, 0);
+                String nroSerie = (String) modelo2.getValueAt(filaSeleccionada, 1);
+                String gasto = (String) modelo2.getValueAt(filaSeleccionada, 2);
+                String horasUso = (String) modelo2.getValueAt(filaSeleccionada, 3);
+                String fecha = (String) modelo2.getValueAt(filaSeleccionada, 4);
+                String gastoMes = (String) modelo2.getValueAt(filaSeleccionada, 5);
+
+                // Colocar los datos en los campos de texto
+                txtCedula2.setText(cedula);
+                txtNroSerie2.setText(nroSerie);
+                txtGastos.setText(gasto);
+                txtuso.setText(horasUso);
+                txtFecha.setText(fecha);
+                txtPromedio.setText(gastoMes);
+            }
+        }
+    });
     }
 
     public Ventana() {
@@ -85,6 +118,7 @@ public class Ventana extends javax.swing.JFrame {
         Mostrar = new javax.swing.JButton();
         botonEliminar = new javax.swing.JButton();
         Cancelar = new javax.swing.JButton();
+        GuardarPdfElectrodomestico = new javax.swing.JButton();
         jPanel6 = new javax.swing.JPanel();
         jPanel9 = new javax.swing.JPanel();
         jLabel9 = new javax.swing.JLabel();
@@ -111,6 +145,7 @@ public class Ventana extends javax.swing.JFrame {
         txtFecha = new javax.swing.JTextField();
         jLabel13 = new javax.swing.JLabel();
         txtPromedio = new javax.swing.JLabel();
+        guardarpdf_gastos1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -331,7 +366,7 @@ public class Ventana extends javax.swing.JFrame {
                 botonEliminarActionPerformed(evt);
             }
         });
-        jPanel4.add(botonEliminar, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 520, 110, 40));
+        jPanel4.add(botonEliminar, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 520, 110, 40));
 
         Cancelar.setFont(new java.awt.Font("Lucida Sans", 1, 14)); // NOI18N
         Cancelar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/proyectoaula/imagenes/cancelado.png"))); // NOI18N
@@ -342,7 +377,18 @@ public class Ventana extends javax.swing.JFrame {
                 CancelarActionPerformed(evt);
             }
         });
-        jPanel4.add(Cancelar, new org.netbeans.lib.awtextra.AbsoluteConstraints(750, 520, 110, 40));
+        jPanel4.add(Cancelar, new org.netbeans.lib.awtextra.AbsoluteConstraints(850, 520, 110, 40));
+
+        GuardarPdfElectrodomestico.setFont(new java.awt.Font("Lucida Sans", 1, 14)); // NOI18N
+        GuardarPdfElectrodomestico.setIcon(new javax.swing.ImageIcon(getClass().getResource("/proyectoaula/imagenes/pdf.png"))); // NOI18N
+        GuardarPdfElectrodomestico.setText("Generar PDF");
+        GuardarPdfElectrodomestico.setBorder(null);
+        GuardarPdfElectrodomestico.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                GuardarPdfElectrodomesticoActionPerformed(evt);
+            }
+        });
+        jPanel4.add(GuardarPdfElectrodomestico, new org.netbeans.lib.awtextra.AbsoluteConstraints(650, 520, 150, 40));
 
         Principal.addTab("0", jPanel4);
 
@@ -393,7 +439,7 @@ public class Ventana extends javax.swing.JFrame {
                 EditarGastosGastosActionPerformed(evt);
             }
         });
-        jPanel9.add(EditarGastos, new org.netbeans.lib.awtextra.AbsoluteConstraints(760, 510, 120, 40));
+        jPanel9.add(EditarGastos, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 520, 100, 40));
 
         EliminarGastos.setFont(new java.awt.Font("Lucida Sans", 0, 14)); // NOI18N
         EliminarGastos.setIcon(new javax.swing.ImageIcon(getClass().getResource("/proyectoaula/imagenes/borrar.png"))); // NOI18N
@@ -404,7 +450,7 @@ public class Ventana extends javax.swing.JFrame {
                 EliminarGastosGastosActionPerformed(evt);
             }
         });
-        jPanel9.add(EliminarGastos, new org.netbeans.lib.awtextra.AbsoluteConstraints(580, 510, 120, 40));
+        jPanel9.add(EliminarGastos, new org.netbeans.lib.awtextra.AbsoluteConstraints(690, 520, 100, 40));
 
         jSeparator6.setBackground(new java.awt.Color(204, 204, 204));
         jSeparator6.setForeground(new java.awt.Color(204, 204, 204));
@@ -426,8 +472,8 @@ public class Ventana extends javax.swing.JFrame {
 
         jLabel11.setFont(new java.awt.Font("Lucida Sans", 1, 14)); // NOI18N
         jLabel11.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        jLabel11.setText("Gasto:");
-        jPanel9.add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 50, 60, 30));
+        jLabel11.setText("Potencia (KwH):");
+        jPanel9.add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 50, 120, 30));
 
         jLabel12.setFont(new java.awt.Font("Lucida Sans", 1, 14)); // NOI18N
         jLabel12.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
@@ -514,11 +560,22 @@ public class Ventana extends javax.swing.JFrame {
         txtPromedio.setText("Promedio: ?");
         jPanel9.add(txtPromedio, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 240, 150, 30));
 
+        guardarpdf_gastos1.setFont(new java.awt.Font("Lucida Sans", 0, 14)); // NOI18N
+        guardarpdf_gastos1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/proyectoaula/imagenes/pdf.png"))); // NOI18N
+        guardarpdf_gastos1.setText("Generar PDF");
+        guardarpdf_gastos1.setBorder(null);
+        guardarpdf_gastos1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                guardarpdf_gastos1ActionPerformed(evt);
+            }
+        });
+        jPanel9.add(guardarpdf_gastos1, new org.netbeans.lib.awtextra.AbsoluteConstraints(830, 520, 140, 40));
+
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
         jPanel6.setLayout(jPanel6Layout);
         jPanel6Layout.setHorizontalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel9, javax.swing.GroupLayout.DEFAULT_SIZE, 1058, Short.MAX_VALUE)
+            .addComponent(jPanel9, javax.swing.GroupLayout.DEFAULT_SIZE, 1059, Short.MAX_VALUE)
         );
         jPanel6Layout.setVerticalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -746,7 +803,7 @@ public class Ventana extends javax.swing.JFrame {
     }//GEN-LAST:event_tablaelectrodomesticoMouseClicked
     
 //Aquí empiezan los métodos de gastos
-    private void guardarElectrodomesticogasto() {
+    private void guardarElectrodomesticoGasto() {
     ConexionGastos objConexion = new ConexionGastos();
     Gastos gastos = recuperarDatosGUIA();
     
@@ -772,7 +829,7 @@ public class Ventana extends javax.swing.JFrame {
             );
 
             objConexion.ejecutarSentenciaSQL(strSentenciaInsert);
-            this.MostrarElectrodomesticoGastos();
+            this.MostrarElectrodomesticogastos();
         }
     } catch (Exception e) {
         e.printStackTrace();
@@ -813,10 +870,10 @@ public class Ventana extends javax.swing.JFrame {
     }
     
     
-    public void MostrarElectrodomesticoGastos() {
-    // Verificar si los campos cedula y nroSerie están llenos
-    if (txtCedula2.getText().isEmpty() || txtNroSerie2.getText().isEmpty()) {
-         JOptionPane.showMessageDialog(rootPane, "Los campos cedula y Numero de serie son obligatorios " );
+   public void MostrarElectrodomesticogastos() {
+    // Verificar si el campo cedula está lleno
+    if (txtCedula2.getText().isEmpty()) {
+        JOptionPane.showMessageDialog(rootPane, "El campo cédula es obligatorio.");
         return;
     }
 
@@ -824,17 +881,28 @@ public class Ventana extends javax.swing.JFrame {
     while (modelo2.getRowCount() > 0) {
         modelo2.removeRow(0);
     }
-    
+
     ConexionGastos objConexion = new ConexionGastos();
-     Gastos gastos =recuperarDatosGUIA();
     try {
-        // Consulta para verificar si existen registros con la cedula y nroSerie proporcionados
-        String consulta = String.format("SELECT * FROM Gastos WHERE Cedula = '%s' AND NroSerie = '%s'", gastos.getCedula(),gastos.getNroSerie());
+        // Obtener la cédula del campo de texto
+        String cedula = txtCedula2.getText();
+
+        // Consulta para verificar si existen registros con la cédula proporcionada
+        String consulta = String.format("SELECT * FROM Gastos WHERE Cedula = '%s'", cedula);
         ResultSet resultado = objConexion.consultarRegistros(consulta);
+
         boolean registrosEncontrados = false;
+
         // Iterar a través de los resultados y agregar a la tabla si hay registros
         while (resultado.next()) {
             registrosEncontrados = true;
+            System.out.println(resultado.getString("Cedula"));
+            System.out.println(resultado.getString("NroSerie"));
+            System.out.println(resultado.getString("Gasto"));
+            System.out.println(resultado.getString("HorasUso"));
+            System.out.println(resultado.getString("Fecha"));
+            System.out.println(resultado.getString("GastoMes"));
+
             Object[] electrodomesticos = {
                 resultado.getString("Cedula"),
                 resultado.getString("NroSerie"),
@@ -845,27 +913,35 @@ public class Ventana extends javax.swing.JFrame {
             };
             modelo2.addRow(electrodomesticos);
         }
+
         // Mostrar mensaje si no se encontraron registros
         if (!registrosEncontrados) {
-            JOptionPane.showMessageDialog(rootPane, "No se encontraron los valores, por favor guardelos primero " );
+            JOptionPane.showMessageDialog(rootPane, "No se encontraron registros con la cédula proporcionada.");
         }
 
     } catch (Exception e) {
-        System.out.println(e);
+        e.printStackTrace();
+    } finally {
+        if (objConexion != null) {
+            try {
+                objConexion.cerrarConexion(); // Suponiendo que tienes un método para cerrar la conexión
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
+}
+    
+    //Calcular gastos
     private void calcular() {
     // Obtener la cédula del campo de texto (ajusta según el nombre de tu campo de texto)
     String cedula = txtCedula2.getText();
-
     // Verificar si el campo de cédula no está vacío
     if (cedula.isEmpty()) {
         JOptionPane.showMessageDialog(rootPane, "El campo de cédula es obligatorio");
         return;
     }
-
     ConexionGastos objConexion = new ConexionGastos();
-
     try {
         // Crear la sentencia SQL para seleccionar los valores de la columna GastoMes para la cédula proporcionada
         String consulta = String.format("SELECT GastoMes FROM Gastos WHERE Cedula = '%s'", cedula);
@@ -880,7 +956,6 @@ public class Ventana extends javax.swing.JFrame {
             suma += resultado.getFloat("GastoMes");
             contador++;
         }
-
         // Calcular el promedio
         float promedio = (contador > 0) ? suma / contador : 0;
         float valorPesos = promedio * 500;
@@ -888,9 +963,9 @@ public class Ventana extends javax.swing.JFrame {
         // Imprimir el promedio
         JOptionPane.showMessageDialog(rootPane, "El promedio de la columna GastoMes para la cédula " + cedula + " es: " + promedio + " y el valor a pagar en pesos es de: $" + valorPesos);
 
-    } catch (Exception e) {
+        } catch (Exception e) {
         e.printStackTrace();
-    } finally {
+        } finally {
         // Cerrar la conexión
         if (objConexion != null) {
             try {
@@ -899,11 +974,11 @@ public class Ventana extends javax.swing.JFrame {
                 e.printStackTrace();
             }
         }
-    }
+        }
     }
      
     //método para editar los gastos
-    public void EditarElectrodomesticosgasto() {
+   public void EditarElectrodomesticosgasto() {
       if (txtCedula2.getText().isEmpty() || txtNroSerie2.getText().isEmpty()) {
          JOptionPane.showMessageDialog(rootPane, "Los campos cedula y Numero de serie son obligatorios " );
         return;
@@ -922,9 +997,10 @@ public class Ventana extends javax.swing.JFrame {
     objConexion.ejecutarSentenciaSQL(strSentenciaUpdate);
 
     // Mostrar los registros actualizados
-    this.MostrarElectrodomesticoGastos();
-    }
+    this.MostrarElectrodomesticogastos();
+}
   
+    
     //método para eliminar gastos
     public void EliminarElectrodomesticogasto(){
      ConexionGastos objConexion = new ConexionGastos();
@@ -936,10 +1012,120 @@ public class Ventana extends javax.swing.JFrame {
     );
     // Ejecutar la sentencia SQL
     objConexion.ejecutarSentenciaSQL(strSentenciaDelete);
-     this.MostrarElectrodomesticoGastos();
+     this.MostrarElectrodomesticogastos();
+    }
+    
+    //métodos para generar pdf
+     public void crearPDFElectrodomesticos(String cedula) {
+        Document document = new Document(PageSize.LETTER);
+        try {
+            String fileName = cedula + "_electrodomestico.pdf";
+            PdfWriter.getInstance(document, new FileOutputStream(fileName));
+            document.open();
+             // Añadir título al documento PDF
+            Paragraph titulo = new Paragraph("Electrodomésticos registrados");
+            titulo.setAlignment(Paragraph.ALIGN_CENTER);
+            document.add(titulo);
+            document.add(new Paragraph("\n"));
+
+
+            // Crear tabla PDF con 4 columnas
+            PdfPTable table = new PdfPTable(4);
+            table.addCell("Cedula");
+            table.addCell("Nombre");
+            table.addCell("NroSerie");
+            table.addCell("Marca");
+
+            // Obtener datos de la base de datos para la cédula especificada
+            ConexionElectrodomestico conexion = new ConexionElectrodomestico();
+            String query = String.format("SELECT * FROM Electrodomesticos WHERE Cedula = '%s'", cedula);
+            ResultSet rs = conexion.consultarRegistros(query);
+
+            // Añadir datos a la tabla
+            boolean hayDatos = false;
+            while (rs.next()) {
+                hayDatos = true;
+                table.addCell(rs.getString("Cedula"));
+                table.addCell(rs.getString("Nombre"));
+                table.addCell(rs.getString("NroSerie"));
+                table.addCell(rs.getString("Marca"));
+            }
+
+            if (!hayDatos) {
+                JOptionPane.showMessageDialog(null, "No se encontraron registros para la cédula proporcionada.");
+            } else {
+                // Añadir tabla al documento PDF
+                document.add(table);
+                document.add(new Paragraph(" ")); // Añadir espacio en blanco
+                JOptionPane.showMessageDialog(null, "PDF creado con éxito!");
+            }
+
+        } catch (FileNotFoundException | DocumentException | SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error al crear el PDF: " + e.getMessage());
+        } finally {
+            document.close();
+        }
+
     }
 
+   public void crearPDFGastos(String cedula) {
+    Document document = new Document(PageSize.LETTER);
+    try {
+        String fileName = cedula + "_gastos.pdf";
+        PdfWriter.getInstance(document, new FileOutputStream(fileName));
+        document.open();
 
+        // Añadir título al documento PDF
+        Paragraph titulo = new Paragraph("Gastos registrados");
+        titulo.setAlignment(Paragraph.ALIGN_CENTER);
+        document.add(titulo);
+        
+        // Añadir un espacio en blanco después del título
+        document.add(new Paragraph("\n"));
+
+        // Crear tabla PDF con 6 columnas
+        PdfPTable table = new PdfPTable(6);
+        table.addCell("Cedula");
+        table.addCell("NroSerie");
+        table.addCell("Gasto");
+        table.addCell("HorasUso");
+        table.addCell("Fecha");
+        table.addCell("GastoMes");
+
+        // Obtener datos de la base de datos para la cédula especificada
+        ConexionGastos conexion = new ConexionGastos();
+        String query = String.format("SELECT * FROM Gastos WHERE Cedula = '%s'", cedula);
+        ResultSet rs = conexion.consultarRegistros(query);
+
+        // Añadir datos a la tabla
+        boolean hayDatos = false;
+        while (rs.next()) {
+            hayDatos = true;
+            table.addCell(rs.getString("Cedula"));
+            table.addCell(rs.getString("NroSerie"));
+            table.addCell(rs.getString("Gasto"));
+            table.addCell(rs.getString("HorasUso"));
+            table.addCell(rs.getString("Fecha"));
+            table.addCell(rs.getString("GastoMes"));
+        }
+
+        if (!hayDatos) {
+            JOptionPane.showMessageDialog(null, "No se encontraron registros de gastos para la cédula proporcionada.");
+        } else {
+            // Añadir tabla al documento PDF
+            document.add(table);
+            document.add(new Paragraph(" ")); // Añadir espacio en blanco
+            JOptionPane.showMessageDialog(null, "PDF de gastos creado con éxito!");
+        }
+
+    } catch (FileNotFoundException | DocumentException | SQLException e) {
+        e.printStackTrace();
+        JOptionPane.showMessageDialog(null, "Error al crear el PDF de gastos: " + e.getMessage());
+    } finally {
+        document.close();
+    }
+}
     
     private void GuardarGastosGastosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_GuardarGastosGastosActionPerformed
     if (txtCedula2.getText().isEmpty() || txtNroSerie2.getText().isEmpty() || txtGastos.getText().isEmpty() || txtuso.getText().isEmpty() || txtFecha.getText().isEmpty()) {
@@ -952,7 +1138,7 @@ public class Ventana extends javax.swing.JFrame {
         return;
         }
  
-        guardarElectrodomesticogasto();
+        guardarElectrodomesticoGasto();
         txtuso.setText("");
         txtGastos.setText("");
         txtFecha.setText("");
@@ -960,11 +1146,15 @@ public class Ventana extends javax.swing.JFrame {
     }//GEN-LAST:event_GuardarGastosGastosActionPerformed
 
     private void MostrarGastosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MostrarGastosActionPerformed
-    MostrarElectrodomesticoGastos(); 
+    MostrarElectrodomesticogastos(); 
     }//GEN-LAST:event_MostrarGastosActionPerformed
 
     private void EditarGastosGastosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EditarGastosGastosActionPerformed
-    EditarElectrodomesticosgasto();
+   if (txtCedula2.getText().isEmpty() || txtNroSerie2.getText().isEmpty() || txtGastos.getText().isEmpty() || txtuso.getText().isEmpty() || txtFecha.getText().isEmpty()) {
+        JOptionPane.showMessageDialog(null, "Rellene todos los campos antes de continuar", "Error", JOptionPane.INFORMATION_MESSAGE);
+        return; // Devuelve null si hay campos vacíos
+    }
+        EditarElectrodomesticosgasto();
     txtuso.setText("");
     txtGastos.setText("");
     txtFecha.setText("");
@@ -986,9 +1176,10 @@ public class Ventana extends javax.swing.JFrame {
     }//GEN-LAST:event_RegresarVentanaActionPerformed
 
     private void gastosTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_gastosTableMouseClicked
-        // TODO add your handling code here:
+      
+        
     }//GEN-LAST:event_gastosTableMouseClicked
-
+    
     private void txtusoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtusoActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtusoActionPerformed
@@ -1029,6 +1220,22 @@ public class Ventana extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_txtFechaActionPerformed
 
+    private void GuardarPdfElectrodomesticoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_GuardarPdfElectrodomesticoActionPerformed
+         if (txtCedula1.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Por favor, ingrese una cédula.");
+        } else {
+            crearPDFElectrodomesticos(txtCedula1.getText());
+        }
+    }//GEN-LAST:event_GuardarPdfElectrodomesticoActionPerformed
+
+    private void guardarpdf_gastos1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_guardarpdf_gastos1ActionPerformed
+     if (txtCedula2.getText().isEmpty()&&txtNroSerie2.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Por favor, ingrese la cedula y/o el numero de serie");
+        } else {
+            crearPDFGastos(txtCedula2.getText());
+        }    
+    }//GEN-LAST:event_guardarpdf_gastos1ActionPerformed
+
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
@@ -1068,6 +1275,7 @@ public class Ventana extends javax.swing.JFrame {
     private javax.swing.JButton EditarGastos;
     private javax.swing.JButton EliminarGastos;
     private javax.swing.JButton GuardarGastos;
+    private javax.swing.JButton GuardarPdfElectrodomestico;
     private javax.swing.JButton Mostrar;
     private javax.swing.JButton MostrarGastos;
     private javax.swing.JTabbedPane Principal;
@@ -1076,6 +1284,7 @@ public class Ventana extends javax.swing.JFrame {
     private javax.swing.JButton botonEliminar;
     private javax.swing.JButton botonGuardar;
     private rojerusan.RSTableMetro gastosTable;
+    private javax.swing.JButton guardarpdf_gastos1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;

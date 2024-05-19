@@ -221,47 +221,57 @@ public class VentanaRegistroUsuario extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void botonGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonGuardarActionPerformed
-        if (camposVacios()) {
-            JOptionPane.showMessageDialog(rootPane, "Todos los campos deben estar llenos.");
-        } else if (!validarCedula()) {
-            JOptionPane.showMessageDialog(rootPane, "La cédula debe tener entre 8 y 10 dígitos enteros.");
-        } else if (!validarEmail()) {
-            JOptionPane.showMessageDialog(rootPane, "El formato del email no es válido.");
-        } else if (!validarTelefono()) {
-            JOptionPane.showMessageDialog(rootPane, "El número de teléfono debe ser un número entero.");
-        } else if (!soloLetras(txtNombre.getText()) || !soloLetras(txtApellido.getText())) {
-            JOptionPane.showMessageDialog(rootPane, "Los campos de Nombre y Apellido solo deben contener letras.");
-        } else {
+       if (camposVacios()) {
+        JOptionPane.showMessageDialog(rootPane, "Todos los campos deben estar llenos.");
+    } else if (!validarCedula()) {
+        JOptionPane.showMessageDialog(rootPane, "La cédula debe tener entre 8 y 10 dígitos enteros.");
+    } else if (!validarEmail()) {
+        JOptionPane.showMessageDialog(rootPane, "El formato del email no es válido.");
+    } else if (!validarTelefono()) {
+        JOptionPane.showMessageDialog(rootPane, "El número de teléfono debe ser un número entero.");
+    } else if (!soloLetras(txtNombre.getText()) || !soloLetras(txtApellido.getText())) {
+        JOptionPane.showMessageDialog(rootPane, "Los campos de Nombre y Apellido solo deben contener letras.");
+    } else {
+        if (!cedulaExistente(txtCedula.getText())) {
             crearUsuario();
             JOptionPane.showMessageDialog(rootPane, "¡El usuario ha sido registrado con éxito!");
             limpiarCampos();
+        } else {
+            JOptionPane.showMessageDialog(rootPane, "La cédula ya está registrada.");
         }
+    }
     }//GEN-LAST:event_botonGuardarActionPerformed
-    private void crearUsuario() {
-        Usuario usuario = recuperarDatosGUI();
-        String strSentenciaInsert = String.format("INSERT INTO Usuarios (Cedula , Nombre , Apellido , Telefono , Correo , Clave )"
-                + "Values('%s', '%s' , '%s' , '%s', '%s' , '%s')", usuario.getCedula(), usuario.getNombre(), usuario.getApellido(),
-                usuario.getTelefono(), usuario.getEmail(), usuario.getContraseña());
-        objConexion.ejecutarSentenciaSQL(strSentenciaInsert);
-        try {
-            ResultSet resultado = objConexion.consultarRegistros("SELECT * FROM Usuarios");
-        } catch (Exception e) {
-            System.out.println(e);
-        }
-    }
+   
+private void crearUsuario() {
+    Usuario usuario = recuperarDatosGUI();
+    String strSentenciaInsert = String.format("INSERT INTO Usuarios (Cedula, Nombre, Apellido, Telefono, Correo, Clave) "
+            + "VALUES ('%s', '%s', '%s', '%s', '%s', '%s')", usuario.getCedula(), usuario.getNombre(), usuario.getApellido(),
+            usuario.getTelefono(), usuario.getEmail(), usuario.getContraseña());
+    objConexion.ejecutarSentenciaSQL(strSentenciaInsert);
+}
 
-    public Usuario recuperarDatosGUI() {
-        Usuario usuario = new Usuario();
-        int cedula = Integer.parseInt(txtCedula.getText());
-        usuario.setCedula(cedula);
-        usuario.setNombre(txtNombre.getText());
-        usuario.setApellido(txtApellido.getText());
-        usuario.setTelefono(txtTelefono.getText());
-        usuario.setEmail(txtEmail.getText());
-        usuario.setContraseña(txtClave.getText());
-        return usuario;
+public Usuario recuperarDatosGUI() {
+    Usuario usuario = new Usuario();
+    int cedula = Integer.parseInt(txtCedula.getText());
+    usuario.setCedula(cedula);
+    usuario.setNombre(txtNombre.getText());
+    usuario.setApellido(txtApellido.getText());
+    usuario.setTelefono(txtTelefono.getText());
+    usuario.setEmail(txtEmail.getText());
+    usuario.setContraseña(txtClave.getText());
+    return usuario;
+}
 
+    private boolean cedulaExistente(String cedula) {
+    try {
+        String strSentenciaSelect = String.format("SELECT * FROM Usuarios WHERE Cedula = '%s'", cedula);
+        ResultSet resultado = objConexion.consultarRegistros(strSentenciaSelect);
+        return resultado.next();
+    } catch (Exception e) {
+        System.out.println(e);
+        return false;
     }
+}
     private void botonBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonBuscarActionPerformed
         if (!txtCedula.getText().isEmpty()) {
             int cedula = Integer.parseInt(txtCedula.getText());
@@ -358,6 +368,7 @@ public class VentanaRegistroUsuario extends javax.swing.JDialog {
                 String contraseña = new String(pf.getPassword());
                 if (!contraseña.isEmpty()) {
                     eliminarUsuario(contraseña);
+                    limpiarCampos();
                 } else {
                     JOptionPane.showMessageDialog(rootPane, "Debe ingresar una contraseña para confirmar.");
                 }
@@ -469,10 +480,11 @@ private boolean camposVacios() {
         return email.matches(".*@.*\\.com");
     }
 
-    private boolean validarTelefono() {
-        String telefono = txtTelefono.getText();
-        return telefono.matches("\\d+");
-    }// método para limpiar campos
+ private boolean validarTelefono() {
+    String telefono = txtTelefono.getText();
+    return telefono.matches("\\d{10}");
+}
+// método para limpiar campos
 
     public void limpiarCampos() {
         txtNombre.setText("");
