@@ -1,16 +1,20 @@
 package proyectoaula.ventanas;
-import java.sql.ResultSet;
+
+import java.sql.Connection;
 import javax.swing.JOptionPane;
-import javax.swing.JPasswordField;
 import proyectoaula.conexionBD.ConexionUsuario;
 import proyectoaula.objects.Usuario;
 
 public class VentanaRegistroUsuario extends javax.swing.JDialog {
-    ConexionUsuario objConexion = new ConexionUsuario();
+    ConexionUsuario conex = new ConexionUsuario();
+    Connection cn = conex.conectar();
+
     public VentanaRegistroUsuario(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
+
         initComponents();
     }
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -30,9 +34,6 @@ public class VentanaRegistroUsuario extends javax.swing.JDialog {
         txtEmail = new javax.swing.JTextField();
         txtClave = new javax.swing.JPasswordField();
         botonGuardar = new javax.swing.JButton();
-        botonBuscar = new javax.swing.JButton();
-        botonEditar = new javax.swing.JButton();
-        botonEliminar = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
         jSeparator1 = new javax.swing.JSeparator();
         jSeparator2 = new javax.swing.JSeparator();
@@ -128,12 +129,7 @@ public class VentanaRegistroUsuario extends javax.swing.JDialog {
 
         txtClave.setFont(new java.awt.Font("Lucida Sans", 0, 14)); // NOI18N
         txtClave.setBorder(null);
-        txtClave.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtClaveActionPerformed(evt);
-            }
-        });
-        jPanel2.add(txtClave, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 350, 252, 30));
+        jPanel2.add(txtClave, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 350, 252, 33));
 
         botonGuardar.setFont(new java.awt.Font("Lucida Sans", 1, 14)); // NOI18N
         botonGuardar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/proyectoaula/imagenes/salvar.png"))); // NOI18N
@@ -144,40 +140,7 @@ public class VentanaRegistroUsuario extends javax.swing.JDialog {
                 botonGuardarActionPerformed(evt);
             }
         });
-        jPanel2.add(botonGuardar, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 434, 117, 40));
-
-        botonBuscar.setFont(new java.awt.Font("Lucida Sans", 1, 14)); // NOI18N
-        botonBuscar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/proyectoaula/imagenes/buscar.png"))); // NOI18N
-        botonBuscar.setText("Buscar");
-        botonBuscar.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
-        botonBuscar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                botonBuscarActionPerformed(evt);
-            }
-        });
-        jPanel2.add(botonBuscar, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 434, 108, 40));
-
-        botonEditar.setFont(new java.awt.Font("Lucida Sans", 1, 14)); // NOI18N
-        botonEditar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/proyectoaula/imagenes/editar-codigo.png"))); // NOI18N
-        botonEditar.setText("Editar");
-        botonEditar.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
-        botonEditar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                botonEditarActionPerformed(evt);
-            }
-        });
-        jPanel2.add(botonEditar, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 434, 102, 40));
-
-        botonEliminar.setFont(new java.awt.Font("Lucida Sans", 1, 14)); // NOI18N
-        botonEliminar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/proyectoaula/imagenes/borrar.png"))); // NOI18N
-        botonEliminar.setText("Eliminar");
-        botonEliminar.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
-        botonEliminar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                botonEliminarActionPerformed(evt);
-            }
-        });
-        jPanel2.add(botonEliminar, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 434, 100, 40));
+        jPanel2.add(botonGuardar, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 430, 117, 40));
 
         jLabel2.setFont(new java.awt.Font("Lucida Sans", 1, 18)); // NOI18N
         jLabel2.setText("FORMULARIO DE REGISTRO DE USUARIO");
@@ -188,9 +151,7 @@ public class VentanaRegistroUsuario extends javax.swing.JDialog {
         jPanel2.add(jSeparator4, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 230, 250, 10));
         jPanel2.add(jSeparator5, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 280, 250, 10));
         jPanel2.add(jSeparator6, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 330, 250, 10));
-
-        jSeparator7.setForeground(new java.awt.Color(204, 204, 204));
-        jPanel2.add(jSeparator7, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 380, 250, 20));
+        jPanel2.add(jSeparator7, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 380, 250, 30));
 
         jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 0, 530, 540));
 
@@ -221,189 +182,91 @@ public class VentanaRegistroUsuario extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void botonGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonGuardarActionPerformed
-    if (camposVacios()) {
-        JOptionPane.showMessageDialog(rootPane, "Todos los campos deben estar llenos.");
-    } else if (!validarCedula()) {
-        JOptionPane.showMessageDialog(rootPane, "La cédula debe tener entre 8 y 10 dígitos enteros.");
-    } else if (!validarEmail()) {
-        JOptionPane.showMessageDialog(rootPane, "El formato del email no es válido.");
-    } else if (!validarTelefono()) {
-        JOptionPane.showMessageDialog(rootPane, "El número de teléfono debe ser un número entero.");
-    } else if (!soloLetras(txtNombre.getText()) || !soloLetras(txtApellido.getText())) {
-        JOptionPane.showMessageDialog(rootPane, "Los campos de Nombre y Apellido solo deben contener letras.");
-    } else {
-        if (!cedulaExistente(txtCedula.getText())) {
-            crearUsuario();
-            JOptionPane.showMessageDialog(rootPane, "¡El usuario ha sido registrado con éxito!");
-            limpiarCampos();
-        } else {
-            JOptionPane.showMessageDialog(rootPane, "La cédula ya está registrada.");
-        }
+        if (camposVacios()) {
+            JOptionPane.showMessageDialog(rootPane, "Todos los campos deben estar llenos.");
+            return;
+        } else if (!validarCedula()) {
+            JOptionPane.showMessageDialog(rootPane, "La cédula debe tener entre 8 y 10 dígitos enteros.");
+            return;
+        } else if (!validarEmail()) {
+            JOptionPane.showMessageDialog(rootPane, "El formato del email no es válido.");
+            return;
+        } else if (!validarTelefono()) {
+            JOptionPane.showMessageDialog(rootPane, "El número de teléfono debe ser un número entero.");
+            return;
+        } else if (!soloLetras(txtNombre.getText()) || !soloLetras(txtApellido.getText())) {
+            JOptionPane.showMessageDialog(rootPane, "Los campos de Nombre y Apellido solo deben contener letras.");
+            return;
+        } 
+        if (crearUsuario()) {
+        limpiarCampos();
     }
-    }//GEN-LAST:event_botonGuardarActionPerformed
-   
-private void crearUsuario() {
-    Usuario usuario = recuperarDatosGUI();
-    String strSentenciaInsert = String.format("INSERT INTO Usuarios (Cedula, Nombre, Apellido, Telefono, Correo, Clave) "
-            + "VALUES ('%s', '%s', '%s', '%s', '%s', '%s')", usuario.getCedula(), usuario.getNombre(), usuario.getApellido(),
-            usuario.getTelefono(), usuario.getEmail(), usuario.getContraseña());
-    objConexion.ejecutarSentenciaSQL(strSentenciaInsert);
-}
 
-public Usuario recuperarDatosGUI() {
+    }//GEN-LAST:event_botonGuardarActionPerformed
+
+    private boolean crearUsuario() {
+        Usuario usuario = recuperarDatosGUI();
+        try {
+            // Verificar si la cédula ya existe
+            String consultaVerificacion = "SELECT COUNT(*) FROM usuarios WHERE cedula = ?";
+            java.sql.PreparedStatement psVerificacion = cn.prepareStatement(consultaVerificacion);
+            psVerificacion.setString(1, usuario.getCedula());
+            java.sql.ResultSet rs = psVerificacion.executeQuery();
+            rs.next();
+            int count = rs.getInt(1);
+
+            if (count > 0) {
+                // La cédula ya existe
+                JOptionPane.showMessageDialog(null, "La cédula ya está registrada");
+                limpiarCampos();
+            } else {
+                // La cédula no existe, proceder con la inserción
+                String consulta = "INSERT INTO usuarios (cedula, nombre, apellido, telefono, gmail, contraseña) VALUES (?, ?, ?, ?, ?, ?)";
+                java.sql.PreparedStatement ps = cn.prepareStatement(consulta);
+
+               // Establece los parámetros
+                ps.setString(1, usuario.getCedula());
+                ps.setString(2, usuario.getNombre());
+                ps.setString(3, usuario.getApellido());
+                ps.setString(4, usuario.getTelefono() );
+                ps.setString(5, usuario.getEmail());
+                ps.setString(6, usuario.getContraseña());
+
+
+                // Ejecuta la actualización
+                ps.executeUpdate();
+
+                // Limpia los campos
+                limpiarCampos();
+
+                JOptionPane.showMessageDialog(null, "Datos registrados correctamente");
+                return true; // Registro exitoso
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "No se pudo registrar los datos: " + e);
+            
+        }
+            return false; // Registro fallido
+    
+    }
+    public Usuario recuperarDatosGUI() {
     Usuario usuario = new Usuario();
-    int cedula = Integer.parseInt(txtCedula.getText());
-    usuario.setCedula(cedula);
+    usuario.setCedula(txtCedula.getText());
     usuario.setNombre(txtNombre.getText());
     usuario.setApellido(txtApellido.getText());
     usuario.setTelefono(txtTelefono.getText());
     usuario.setEmail(txtEmail.getText());
     usuario.setContraseña(txtClave.getText());
     return usuario;
-}
+}  
 
-    private boolean cedulaExistente(String cedula) {
-    try {
-        String strSentenciaSelect = String.format("SELECT * FROM Usuarios WHERE Cedula = '%s'", cedula);
-        ResultSet resultado = objConexion.consultarRegistros(strSentenciaSelect);
-        return resultado.next();
-    } catch (Exception e) {
-        System.out.println(e);
-        return false;
-    }
-}
-    private void botonBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonBuscarActionPerformed
-        if (!txtCedula.getText().isEmpty()) {
-            int cedula = Integer.parseInt(txtCedula.getText());
-            Usuario usuario = consultarUsuario(cedula);
-            if (usuario != null) {
-                txtNombre.setText(usuario.getNombre());
-                txtApellido.setText(usuario.getApellido());
-                txtTelefono.setText(usuario.getTelefono());
-                txtEmail.setText(usuario.getEmail());
-                txtClave.setText(usuario.getContraseña());
-            }
-        } else {
-            JOptionPane.showMessageDialog(rootPane, "Ingrese una cédula válida para consultar.");
-        }
-    }//GEN-LAST:event_botonBuscarActionPerformed
-    public Usuario consultarUsuario(int cedula) {      
-        String strSentenciaSelect = String.format("SELECT * FROM Usuarios WHERE Cedula = '%d'", cedula);
-        try {
-            ResultSet resultado = objConexion.consultarRegistros(strSentenciaSelect);
-            if (resultado.next()) {
-                Usuario usuario = new Usuario();
-                usuario.setCedula(resultado.getInt("Cedula"));
-                usuario.setNombre(resultado.getString("Nombre"));
-                usuario.setApellido(resultado.getString("Apellido"));
-                usuario.setTelefono(resultado.getString("Telefono"));
-                usuario.setEmail(resultado.getString("Correo"));
-                usuario.setContraseña(resultado.getString("Clave"));
-                return usuario;
-            } else {
-                JOptionPane.showMessageDialog(rootPane, "No se encontró un usuario con esa cédula.");
-                return null;
-            }
-        } catch (Exception e) {
-            System.out.println(e);
-            return null;
-        }
-    }
-
-    private void botonEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonEditarActionPerformed
-      if (camposVacios()) {
-        JOptionPane.showMessageDialog(rootPane, "Todos los campos deben estar llenos.");
-    } else if (!validarCedula()) {
-        JOptionPane.showMessageDialog(rootPane, "La cédula debe tener entre 8 y 10 dígitos enteros.");
-    } else if (!validarEmail()) {
-        JOptionPane.showMessageDialog(rootPane, "El formato del email no es válido.");
-    } else if (!validarTelefono()) {
-        JOptionPane.showMessageDialog(rootPane, "El número de teléfono debe ser un número entero.");
-    } else if (!soloLetras(txtNombre.getText()) || !soloLetras(txtApellido.getText())) {
-        JOptionPane.showMessageDialog(rootPane, "Los campos de Nombre y Apellido solo deben contener letras.");
-    } else {
-         int respuesta = JOptionPane.showConfirmDialog(rootPane, "¿Está seguro de que desea modificar el usuario?", "Confirmar modificación", JOptionPane.YES_NO_OPTION);
     
-         if (respuesta == JOptionPane.YES_OPTION) {
-            JPasswordField pf = new JPasswordField();
-            int okCxl = JOptionPane.showConfirmDialog(rootPane, pf, "Ingrese la contraseña para confirmar", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 
-            if (okCxl == JOptionPane.OK_OPTION) {
-                String contraseña = new String(pf.getPassword());
-                if (!contraseña.isEmpty()) {
-                    editarUsuario(contraseña);
-                    limpiarCampos();
-                } else {
-                    JOptionPane.showMessageDialog(rootPane, "Debe ingresar una contraseña para confirmar.");
-                }
-        }
-    }
-    }
-
-    }//GEN-LAST:event_botonEditarActionPerformed
-
-    public void editarUsuario(String contraseña) {
-    Usuario usuario = recuperarDatosGUI();
-    // Suponiendo que la contraseña debe coincidir con la almacenada en el objeto Usuario
-    if (usuario.getContraseña().equals(contraseña)) {
-        String strSentenciaInsert = String.format("UPDATE Usuarios SET Nombre='%s', Apellido='%s', Telefono='%s', Correo='%s', Clave='%s' WHERE Cedula=%s",
-                usuario.getNombre(), usuario.getApellido(), usuario.getTelefono(),
-                usuario.getEmail(), usuario.getContraseña(), usuario.getCedula());
-
-        objConexion.ejecutarSentenciaSQL(strSentenciaInsert);
-        JOptionPane.showMessageDialog(rootPane, "Usuario modificado correctamente.");
-    } else {
-        JOptionPane.showMessageDialog(rootPane, "Contraseña incorrecta. No se realizó la modificación.");
-    }
-    }
-    
-    private void botonEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonEliminarActionPerformed
-    if (!txtCedula.getText().isEmpty()) {
-        int respuesta = JOptionPane.showConfirmDialog(rootPane, "¿Está seguro de que desea eliminar el usuario?", "Confirmar eliminación", JOptionPane.YES_NO_OPTION);
-        if (respuesta == JOptionPane.YES_OPTION) {
-            JPasswordField pf = new JPasswordField();
-            int okCxl = JOptionPane.showConfirmDialog(rootPane, pf, "Ingrese la contraseña para confirmar", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
-
-            if (okCxl == JOptionPane.OK_OPTION) {
-                String contraseña = new String(pf.getPassword());
-                if (!contraseña.isEmpty()) {
-                    eliminarUsuario(contraseña);
-                    limpiarCampos();
-                } else {
-                    JOptionPane.showMessageDialog(rootPane, "Debe ingresar una contraseña para confirmar.");
-                }
-            }
-        }
-    } else {
-        JOptionPane.showMessageDialog(rootPane, "Ingrese una cédula para eliminar.");
-    }
-    }//GEN-LAST:event_botonEliminarActionPerformed
-    public void eliminarUsuario(String contraseña) {
-    Usuario usuario = recuperarDatosGUI();
-    // Suponiendo que la contraseña debe coincidir con la almacenada en el objeto Usuario
-    if (usuario.getContraseña().equals(contraseña)) {
-        String strSentenciaDelete = String.format("DELETE FROM Usuarios WHERE Cedula='%d'", usuario.getCedula());
-        //System.out.println("Sentencia SQL de eliminación: " + strSentenciaDelete);
-        try {
-            objConexion.ejecutarSentenciaSQL(strSentenciaDelete);
-            JOptionPane.showMessageDialog(rootPane, "¡El usuario ha sido eliminado con éxito!");
-        } catch (Exception e) {
-            System.out.println("Error al eliminar usuario: " + e.getMessage());
-            JOptionPane.showMessageDialog(rootPane, "Ocurrió un error al eliminar el usuario.");
-        }
-    } else {
-        JOptionPane.showMessageDialog(rootPane, "Contraseña incorrecta. No se realizó la eliminación.");
-      }
-    }
     private void RegresarVentanaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RegresarVentanaActionPerformed
         VentanaLogin abc = new VentanaLogin();
         abc.setVisible(true);
         this.setVisible(false);
     }//GEN-LAST:event_RegresarVentanaActionPerformed
-
-    private void txtClaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtClaveActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtClaveActionPerformed
 
     public static void main(String args[]) {
         //</editor-fold>
@@ -427,9 +290,6 @@ public Usuario recuperarDatosGUI() {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton RegresarVentana;
     private javax.swing.JLabel apellido;
-    private javax.swing.JButton botonBuscar;
-    private javax.swing.JButton botonEditar;
-    private javax.swing.JButton botonEliminar;
     private javax.swing.JButton botonGuardar;
     private javax.swing.JLabel cedula;
     private javax.swing.JLabel contraseña;
@@ -455,7 +315,8 @@ public Usuario recuperarDatosGUI() {
     private javax.swing.JTextField txtNombre;
     private javax.swing.JTextField txtTelefono;
     // End of variables declaration//GEN-END:variables
-private boolean camposVacios() {
+
+    private boolean camposVacios() {
         return txtCedula.getText().isEmpty() || txtNombre.getText().isEmpty()
                 || txtApellido.getText().isEmpty() || txtTelefono.getText().isEmpty()
                 || txtEmail.getText().isEmpty() || txtClave.getText().isEmpty();
@@ -480,10 +341,10 @@ private boolean camposVacios() {
         return email.matches(".*@.*\\.com");
     }
 
- private boolean validarTelefono() {
-    String telefono = txtTelefono.getText();
-    return telefono.matches("\\d{10}");
-}
+    private boolean validarTelefono() {
+        String telefono = txtTelefono.getText();
+        return telefono.matches("\\d{10}");
+    }
 // método para limpiar campos
 
     public void limpiarCampos() {

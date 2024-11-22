@@ -1,12 +1,17 @@
 package proyectoaula.ventanas;
 
-import proyectoaula.conexionBD.ConexionUsuario;
-
 import javax.swing.JOptionPane;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 
 public class VentanaLogin extends javax.swing.JFrame {
 
+    Connection cn = null;
+
     public VentanaLogin() {
+
         initComponents();
     }
 
@@ -95,23 +100,23 @@ public class VentanaLogin extends javax.swing.JFrame {
         });
         jPanel2.add(botonRegistrarse, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 260, 140, 40));
 
-        jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(650, 80, 350, 360));
+        jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(610, 80, 350, 360));
 
         jLabel6.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
         jLabel6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/proyectoaula/imagenes/encendiendo.png"))); // NOI18N
         jLabel6.setText("ECO-POWER");
         jLabel6.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         jLabel6.setInheritsPopupMenu(false);
-        jPanel1.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 80, 290, 80));
+        jPanel1.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 60, 290, 80));
 
         jLabel4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/proyectoaula/imagenes/nature-3475815_1280.jpg"))); // NOI18N
-        jPanel1.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1150, 690));
+        jPanel1.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1280, 690));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -129,29 +134,74 @@ public class VentanaLogin extends javax.swing.JFrame {
     }//GEN-LAST:event_botonRegistrarseActionPerformed
 
     private void botonEntrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonEntrarActionPerformed
-        String cedula = txtCedula.getText();
+        String usuario = txtCedula.getText();
         String contraseña = new String(txtContraseña.getPassword());
-        if (verificarInicioSesion(cedula, contraseña)) {
-            mostrarMensajeInicioSesionExitoso();
-            abrirNuevaVentana();
-            cerrarVentanaActual();
+
+        if (!usuario.equals("") && !contraseña.equals("")) {
+            try {
+                // Verifica si el inicio de sesión es exitoso
+                if (verificarInicioSesion(usuario, contraseña)) {
+                    mostrarMensajeInicioSesionExitoso();
+                    abrirNuevaVentana();
+                    cerrarVentanaActual();
+                } else {
+                    mostrarMensajeError("Usuario o contraseña incorrectos");
+                }
+            } catch (Exception e) {
+                mostrarMensajeError("Error de conexión: " + e.getMessage());
+            }
         } else {
-            mostrarMensajeError("Cédula o contraseña incorrecta.");
+            mostrarMensajeError("Por favor completar los campos");
         }
+
+
     }//GEN-LAST:event_botonEntrarActionPerformed
     private boolean verificarInicioSesion(String cedula, String contraseña) {
-        ConexionUsuario objConexion = new ConexionUsuario();
-        return objConexion.verificarInicioSesion(cedula, contraseña);
+        boolean inicioSesionExitoso = false;
+        Connection cn = null;
+
+        try {
+            // Establece la conexión (modifica usuario y contraseña con valores correctos)
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            cn = DriverManager.getConnection("jdbc:mysql://localhost:3306/login-proyecto", "root", "");
+            // Prepara la consulta SQL
+            String query = "SELECT * FROM usuarios WHERE cedula = ? AND contraseña = ?";
+            PreparedStatement ps = cn.prepareStatement(query);
+            // Asigna valores a los parámetros
+            ps.setString(1, cedula);
+            ps.setString(2, contraseña);
+            // Ejecuta la consulta
+            ResultSet rs = ps.executeQuery();
+            // Verifica si se encontró el usuario
+            inicioSesionExitoso = rs.next();
+            // Cierra ResultSet y PreparedStatement
+            rs.close();
+            ps.close();
+        } catch (Exception e) {
+            mostrarMensajeError("Error de conexión: " + e.getMessage());
+        } finally {
+            try {
+                if (cn != null && !cn.isClosed()) {
+                    cn.close(); // Cierra la conexión si está abierta
+                }
+            } catch (Exception e) {
+                mostrarMensajeError("Error al cerrar la conexión: " + e.getMessage());
+            }
+        }
+
+        return inicioSesionExitoso;
     }
 
     private void mostrarMensajeInicioSesionExitoso() {
         JOptionPane.showMessageDialog(rootPane, "Inicio de sesión exitoso.");
     }
-    
+
     private void abrirNuevaVentana() {
         String cedula = txtCedula.getText();
         Ventana nuevaVentana = new Ventana(cedula);
-        nuevaVentana.setVisible(true);
+        nuevaVentana.setLocationRelativeTo(this); // Centrar la ventana con respecto a la actual
+        nuevaVentana.setVisible(true); // Mostrar la nueva ventana
+        this.setVisible(false);
     }
 
     private void cerrarVentanaActual() {
